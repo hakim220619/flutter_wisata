@@ -7,6 +7,7 @@ import 'package:wisata/home/HomePage.dart';
 import 'package:wisata/login/view/login.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:wisata/wisata/wisatapage.dart';
 
 
 late SharedPreferences prefs;

@@ -253,7 +253,10 @@ class _MyHomePageState extends State<MyHomePage> {
                         // Update the state of the app
                         // _onItemTapped(0);
                         // Then close the drawer
-                        Navigator.pop(context);
+                        Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const Homepage()));
                       },
                     ),
                     // ListTile(

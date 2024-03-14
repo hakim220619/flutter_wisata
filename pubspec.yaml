@@ -46,6 +46,8 @@ dependencies:
   image_card: ^0.0.4
   flutter_reaction_button: ^3.0.0+3
   modal_bottom_sheet: ^2.1.2
+  comment_box: ^0.0.18
+  chat_bubbles: ^1.6.0
 
 dev_dependencies:
   flutter_test:

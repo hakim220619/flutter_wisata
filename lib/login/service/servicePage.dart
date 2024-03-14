@@ -20,7 +20,7 @@ class HttpService {
     http.Response response = await _client
         .post(_loginUrl, body: {"email": email, "password": password});
 
-    // print(response.body);
+    print(response.body);
     if (response.statusCode == 200) {
       // ignore: non_constant_identifier_names
 

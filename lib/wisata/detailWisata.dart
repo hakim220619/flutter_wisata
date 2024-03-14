@@ -12,26 +12,28 @@ import 'package:wisata/components/like/data.dart' as data;
 import 'package:wisata/components/like/image.dart';
 import 'package:wisata/components/like/post.dart';
 
-class ListWisataPage extends StatefulWidget {
-  const ListWisataPage({
-    Key? key,
-  }) : super(key: key);
+class DetailWisataPage extends StatefulWidget {
+  const DetailWisataPage({Key? key, required this.id}) : super(key: key);
+
+  final String id;
 
   @override
-  State<ListWisataPage> createState() => _ListWisataPageState();
+  State<DetailWisataPage> createState() => _DetailWisataPageState();
 }
 
 List _listsData = [];
 
-class _ListWisataPageState extends State<ListWisataPage> {
+class _DetailWisataPageState extends State<DetailWisataPage> {
   Future<dynamic> lisWisata() async {
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();
       var token = preferences.getString('token');
-      var url = Uri.parse('${dotenv.env['url']}/getWisata');
-      final response = await http.get(url, headers: {
+      var url = Uri.parse('${dotenv.env['url']}/getDetailWisata');
+      final response = await http.post(url, headers: {
         "Accept": "application/json",
         "Authorization": "Bearer $token",
+      }, body: {
+        'id_wisata': widget.id.toString()
       });
       // print(response.body);
       if (response.statusCode == 200) {
@@ -67,35 +69,62 @@ class _ListWisataPageState extends State<ListWisataPage> {
       home: RefreshIndicator(
         onRefresh: refresh,
         child: ListView.builder(
-          itemCount: _listsData.length,
-          itemBuilder: (context, index) => SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 5),
-          child: Column(
-            children: [
-              PostWidget(
-                id: _listsData[index]['id'].toString(),
-                title: _title(title: _listsData[index]['nama_wisata']),
-                description: _content(desc: _listsData[index]['keterangan']),
-                imgPath: 'assets/images/wisata/pantai1.jpg',
-                reactions: data.reactions,
-              
+          itemCount: 1,
+          itemBuilder: (context, index) => Card(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      elevation: 2,
+      child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: Column(
+          children: [
+            InkWell(
+              onTap: () {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => DetailWisataPage(id: widget.id.toString()),
+                  ),
+                  (route) => false,
+                );
+              },
+              child: AspectRatio(
+                aspectRatio: 2,
+                child: Image.asset(
+                  'assets/images/wisata/pantai1.jpg',
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
               ),
-              
-              
-              const SafeArea(
-                child: SizedBox(),
+            ),
+            
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('${_listsData[index]['nama_wisata']}', style: TextStyle(fontSize: 15, color: Colors.black),),
+                    const SizedBox(
+                        height: 2,
+                      ),
+                   Text('${_listsData[index]['description']}', style: TextStyle(fontSize: 15, color: Colors.black87),),
+                      const SizedBox(
+                        height: 2,
+                      ),
+                  
+                  ],
+                ),
               ),
-            ],
-          ),
+            
+          ],
         ),
+          ),
           // ),
         ),
       ),
+      )
     );
   }
 }
-
-
 
 Widget _title({title, Color? color}) {
   return Text(
@@ -147,4 +176,3 @@ Widget _tag(String tag, VoidCallback onPressed) {
     ),
   );
 }
-

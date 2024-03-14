@@ -1,21 +1,125 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_reaction_button/flutter_reaction_button.dart';
-import 'package:wisata/components/like/data.dart' as data;
+import 'dart:convert';
 
-class PostWidget extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_reaction_button/flutter_reaction_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wisata/components/like/data.dart' as data;
+import 'package:http/http.dart' as http;
+import 'package:comment_box/comment/comment.dart';
+import 'package:comment_box/comment/test.dart';
+import 'package:comment_box/main.dart';
+import 'package:wisata/wisata/detailWisata.dart';
+
+class PostWidget extends StatefulWidget {
   const PostWidget({
     Key? key,
+    this.id,
     this.title,
     required this.imgPath,
     required this.reactions,
     this.description,
   }) : super(key: key);
 
+  final String? id;
   final String imgPath;
 
   final Widget? title;
   final Widget? description;
   final List<Reaction<String>> reactions;
+
+  @override
+  State<PostWidget> createState() => _PostWidgetState();
+}
+
+List _listsData = [];
+
+class _PostWidgetState extends State<PostWidget> {
+  Future<dynamic> lisComment() async {
+    try {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      var token = preferences.getString('token');
+      var url = Uri.parse('${dotenv.env['url']}/listCommentById');
+      final response = await http.post(url, headers: {
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      }, body: {
+        'id_wisata': widget.id.toString()
+      });
+      // print(response.body);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        // print(data);
+        setState(() {
+          _listsData = data['data'];
+          showModalBottomSheet<void>(
+            context: context,
+            isScrollControlled: true,
+            useSafeArea: true,
+            builder: (BuildContext context) {
+              return SizedBox(
+                height: 600,
+                child: Container(
+                  child: CommentBox(
+                    userImage: CommentBox.commentImageParser(
+                        imageURLorPath: "assets/images/users.png"),
+                    child: commentChild(_listsData),
+                    labelText: 'Write a comment...',
+                    errorText: 'Comment cannot be blank',
+                    withBorder: false,
+                    sendButtonMethod: () async {
+                      if (formKey.currentState!.validate()) {
+                        // print(commentController.text);
+                        SharedPreferences preferences =
+                            await SharedPreferences.getInstance();
+                        var token = preferences.getString('token');
+                        var id = preferences.getString('id');
+                        var url =
+                            Uri.parse('${dotenv.env['url']}/addCommentById');
+                        final response = await http.post(url, headers: {
+                          "Accept": "application/json",
+                          "Authorization": "Bearer $token",
+                        }, body: {
+                          'id_wisata': widget.id.toString(),
+                          'comment': commentController.text,
+                          'id_user': id,
+                        });
+                        print(response.body);
+
+                        if (response.statusCode == 200) {
+                          lisComment();
+                          Navigator.pop(context);
+                          commentController.clear();
+                          FocusScope.of(context).unfocus();
+                        }
+                      } else {
+                        print("Not validated");
+                      }
+                    },
+                    formKey: formKey,
+                    commentController: commentController,
+                    backgroundColor: Colors.blue,
+                    textColor: Colors.white,
+                    sendWidget:
+                        Icon(Icons.send_sharp, size: 30, color: Colors.white),
+                  ),
+                ),
+              );
+            },
+          );
+        });
+      }
+    } catch (e) {
+      // print(e);
+    }
+  }
+
+  // Sample data for three lists
+  @override
+  void initState() {
+    super.initState();
+    // print(widget.id);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,26 +132,37 @@ class PostWidget extends StatelessWidget {
         ),
         child: Column(
           children: [
-            AspectRatio(
-              aspectRatio: 2,
-              child: Image.asset(
-                imgPath,
-                width: double.infinity,
-                fit: BoxFit.cover,
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => DetailWisataPage(id: widget.id.toString()),
+                  ),
+                  
+                );
+              },
+              child: AspectRatio(
+                aspectRatio: 2,
+                child: Image.asset(
+                  widget.imgPath,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-            if (title != null || description != null)
+            if (widget.title != null || widget.description != null)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (title != null) title!,
-                    if (title != null && description != null)
+                    if (widget.title != null) widget.title!,
+                    if (widget.title != null && widget.description != null)
                       const SizedBox(
                         height: 2,
                       ),
-                    if (description != null) description!,
+                    if (widget.description != null) widget.description!,
                   ],
                 ),
               ),
@@ -62,9 +177,9 @@ class PostWidget extends StatelessWidget {
                     onReactionChanged: (Reaction<String>? reaction) {
                       debugPrint('Selected value: ${reaction?.value}');
                     },
-                    reactions: reactions,
-                    placeholder: reactions.first,
-                    selectedReaction: reactions.first,
+                    reactions: widget.reactions,
+                    placeholder: widget.reactions.first,
+                    selectedReaction: widget.reactions.first,
                   ),
                   Row(
                     children: [
@@ -84,49 +199,11 @@ class PostWidget extends StatelessWidget {
                           ),
                         ),
                         onTap: () {
-                          showModalBottomSheet<void>(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return SizedBox(
-                                height: 200,
-                                child: Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      const Text('Modal BottomSheet'),
-                                      ElevatedButton(
-                                        child: const Text('Close BottomSheet'),
-                                        onPressed: () => Navigator.pop(context),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          );
+                          lisComment();
                         },
                       ),
                     ],
                   ),
-                  Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.share,
-                        size: 16,
-                        color: Colors.grey[400],
-                      ),
-                      const SizedBox(width: 5),
-                      Text(
-                        'Share',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  )
                 ],
               ),
             ),
@@ -136,3 +213,43 @@ class PostWidget extends StatelessWidget {
     );
   }
 }
+
+Widget commentChild(data) {
+  return ListView(
+    children: [
+      for (var i = 0; i < data.length; i++)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
+          child: ListTile(
+            leading: GestureDetector(
+              onTap: () async {
+                // Display the image in large form.
+                print("Comment Clicked");
+              },
+              child: Container(
+                height: 50.0,
+                width: 50.0,
+                decoration: new BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: new BorderRadius.all(Radius.circular(50))),
+                child: CircleAvatar(
+                    radius: 50,
+                    backgroundImage: CommentBox.commentImageParser(
+                        imageURLorPath: 'assets/images/users.png')),
+              ),
+            ),
+            title: Text(
+              _listsData[i]['name'],
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text(_listsData[i]['comment']),
+            trailing: Text(_listsData[i]['created_at'],
+                style: TextStyle(fontSize: 10)),
+          ),
+        )
+    ],
+  );
+}
+
+final formKey = GlobalKey<FormState>();
+final TextEditingController commentController = TextEditingController();
