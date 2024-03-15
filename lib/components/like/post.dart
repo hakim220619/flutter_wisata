@@ -10,12 +10,14 @@ import 'package:comment_box/comment/comment.dart';
 import 'package:comment_box/comment/test.dart';
 import 'package:comment_box/main.dart';
 import 'package:wisata/wisata/detailWisata.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class PostWidget extends StatefulWidget {
   const PostWidget({
     Key? key,
     this.id,
     this.title,
+    required this.rate,
     required this.imgPath,
     required this.reactions,
     this.description,
@@ -23,6 +25,7 @@ class PostWidget extends StatefulWidget {
 
   final String? id;
   final String imgPath;
+  final double rate;
 
   final Widget? title;
   final Widget? description;
@@ -114,6 +117,30 @@ class _PostWidgetState extends State<PostWidget> {
     }
   }
 
+  // Future<Widget> reaction({id}) async {
+  //   SharedPreferences preferences = await SharedPreferences.getInstance();
+  //     var token = preferences.getString('token');
+  //     var url = Uri.parse('${dotenv.env['url']}/listCommentById');
+  //     final response = await http.post(url, headers: {
+  //       "Accept": "application/json",
+  //       "Authorization": "Bearer $token",
+  //     }, body: {
+  //       'id_wisata': widget.id.toString()
+  //     });
+  //     // print(response.body);
+  //     if (response.statusCode == 200) {
+  //       final data = jsonDecode(response.body);
+  //   return ReactionButton<String>(
+  //     itemSize: const Size.square(40),
+  //     onReactionChanged: (Reaction<String>? reaction) {
+  //       debugPrint('Selected value: ${reaction?.value}');
+  //     },
+  //     reactions: widget.reactions,
+  //     placeholder: widget.reactions.first,
+  //     selectedReaction: widget.reactions.first,
+  //   );
+  // }
+
   // Sample data for three lists
   @override
   void initState() {
@@ -128,7 +155,7 @@ class _PostWidgetState extends State<PostWidget> {
       elevation: 2,
       child: ClipRRect(
         borderRadius: const BorderRadius.all(
-          Radius.circular(5),
+          Radius.circular(10),
         ),
         child: Column(
           children: [
@@ -137,9 +164,9 @@ class _PostWidgetState extends State<PostWidget> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (BuildContext context) => DetailWisataPage(id: widget.id.toString()),
+                    builder: (BuildContext context) =>
+                        DetailWisataPage(id: widget.id.toString()),
                   ),
-                  
                 );
               },
               child: AspectRatio(
@@ -153,11 +180,27 @@ class _PostWidgetState extends State<PostWidget> {
             ),
             if (widget.title != null || widget.description != null)
               Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (widget.title != null) widget.title!,
+                    RatingBar.builder(
+                        itemSize: 20,
+                        initialRating: widget.rate.toDouble(),
+                        minRating: 1,
+                        direction: Axis.horizontal,
+                        allowHalfRating: true,
+                        itemCount: 5,
+                        itemPadding: EdgeInsets.all(10),
+                        itemBuilder: (context, _) => Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                        ),
+                        onRatingUpdate: (rating) {
+                          print(rating);
+                        },
+                      ),
                     if (widget.title != null && widget.description != null)
                       const SizedBox(
                         height: 2,
@@ -166,46 +209,38 @@ class _PostWidgetState extends State<PostWidget> {
                   ],
                 ),
               ),
-            Container(
+            Center(
+                    child: Container(
               height: 55,
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ReactionButton<String>(
-                    itemSize: const Size.square(40),
-                    onReactionChanged: (Reaction<String>? reaction) {
-                      debugPrint('Selected value: ${reaction?.value}');
-                    },
-                    reactions: widget.reactions,
-                    placeholder: widget.reactions.first,
-                    selectedReaction: widget.reactions.first,
-                  ),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.message,
-                        size: 16,
-                        color: Colors.grey[400],
-                      ),
-                      const SizedBox(width: 5),
-                      InkWell(
-                        child: Text(
-                          'Comment',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                            fontWeight: FontWeight.w600,
-                          ),
+              child:
+                   Row(
+                      children: [
+                        
+                        Icon(
+                          Icons.message,
+                          size: 14,
+                          color: Colors.grey[400],
                         ),
-                        onTap: () {
-                          lisComment();
-                        },
-                      ),
-                    ],
+                        const SizedBox(width: 5),
+                        InkWell(
+                          child: Text(
+                            'Comment',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          onTap: () {
+                            lisComment();
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
+                
+              
             ),
           ],
         ),

@@ -10,16 +10,10 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  late String nik;
+  
   late String nama;
   late String email;
   late String password;
-  late String address;
-  var jenis_kelamin;
-
-  late String bb_lahir;
-  late String tb_lahir;
-  late String nama_ortu;
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   // ignore: override_on_non_overriding_member
@@ -38,10 +32,10 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController tanggal_lahir = TextEditingController();
 
   Widget build(BuildContext context) {
-    final List<String> nameList = <String>[
-      "Laki-Laki",
-      "Perempuan",
-    ];
+    // final List<String> nameList = <String>[
+    //   "Laki-Laki",
+    //   "Perempuan",
+    // ];
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -60,29 +54,7 @@ class _RegisterPageState extends State<RegisterPage> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    TextFormField(
-                      obscureText: false,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Masukan Nik';
-                        }
-                        return null;
-                      },
-                      maxLines: 1,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          prefixIcon: const Icon(Icons.person_3_outlined),
-                          labelText: 'Masukan Nik',
-                          hintText: 'Masukan Nik'),
-                      onChanged: (value) {
-                        setState(() {
-                          nik = value;
-                        });
-                      },
-                    ),
+                    
                     const SizedBox(
                       height: 10,
                     ),
@@ -169,133 +141,17 @@ class _RegisterPageState extends State<RegisterPage> {
                         });
                       },
                     ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    TextFormField(
-                      obscureText: false,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Masukan Address';
-                        }
-                        return null;
-                      },
-                      maxLines: 1,
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          prefixIcon: const Icon(Icons.home),
-                          labelText: 'Masukan Adrress',
-                          hintText: 'Masukan Adrress'),
-                      onChanged: (value) {
-                        setState(() {
-                          address = value;
-                        });
-                      },
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    DropdownButtonFormField(
-                      decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.man_2),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          hintText: 'Jenis Kelamin'),
-                      isExpanded: true,
-                      items: nameList.map(
-                        (item) {
-                          return DropdownMenuItem(
-                            value: item,
-                            child: Text(item),
-                          );
-                        },
-                      ).toList(),
-                      validator: (value) {
-                        if (value == null) return 'Silahkan Masukan Data';
-                        return null;
-                      },
-                      value: jenis_kelamin,
-                      onChanged: (vale) {
-                        setState(() {
-                          jenis_kelamin = vale;
-                        });
-                      },
-                    ),
-                    const SizedBox(
-                      height: 10.0,
-                    ),
-                    TextFormField(
-                      readOnly: true,
-                      controller: tanggal_lahir,
-                      decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.date_range),
-                          fillColor: Colors.grey.shade100,
-                          filled: true,
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          hintText: 'Pilih Tanggal'),
-                      validator: (value) {
-                        if (value == false) return 'Silahkan Pilih Tanggal';
-                        return null;
-                      },
-                      onTap: () async {
-                        DateFormat('dd/mm/yyyy').format(DateTime.now());
-                        var date = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(1999),
-                            lastDate: DateTime.now());
-                        if (date == null) {
-                          tanggal_lahir.text = "";
-                        } else {
-                          tanggal_lahir.text = date.toString().substring(0, 10);
-                        }
-                      },
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
                     
-                    TextFormField(
-                      obscureText: false,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Masukan Nama Ortu';
-                        }
-                        return null;
-                      },
-                      maxLines: 1,
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          prefixIcon: const Icon(Icons.person_2_sharp),
-                          labelText: 'Masukan Nama Orang Tua',
-                          hintText: 'Masukan Nama Orang Tua'),
-                      onChanged: (value) {
-                        setState(() {
-                          nama_ortu = value;
-                        });
-                      },
-                    ),
                     const SizedBox(
                       height: 20,
                     ),
                     InkWell(
                         onTap: () async {
                           if (_formKey.currentState!.validate()) {
-                            await HttpService.register(
-                                nik,
+                            await HttpService.register(  
                                 nama,
                                 email,
                                 password,
-                                address,
-                                jenis_kelamin,
-                                tanggal_lahir,
-                                nama_ortu,
                                 context);
                           }
                         },

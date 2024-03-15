@@ -10,6 +10,7 @@ import 'package:wisata/login/view/login.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:wisata/wisata/search.dart';
 import 'package:wisata/wisata/wisatapage.dart';
 
 class Homepage extends StatelessWidget {
@@ -194,145 +195,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: const Center(
-        child: ListWisataPage()
+        child: SearchWisataRiverpod()
       ),
-      drawer: Drawer(
-        // Add a ListView to the drawer. This ensures the user can scroll
-        // through the options in the drawer if there isn't enough vertical
-        // space to fit everything.
-        child: ListView(
-          // Important: Remove any padding from the ListView.
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-                decoration: const BoxDecoration(
-                  color: Colors.blue,
-                ),
-                child: Text('$name')),
-            role == '1'
-                ? Column(children: [
-                    ListTile(
-                      title: const Text('Home'),
-                      selected: _selectedIndex == 0,
-                      onTap: () {
-                        // Update the state of the app
-                        // _onItemTapped(0);
-                        // Then close the drawer
-                        Navigator.pop(context);
-                      },
-                    ),
-                    // ListTile(
-                    //   title: const Text('Konsultasi'),
-                    //   selected: _selectedIndex == 1,
-                    //   onTap: () {
-                    //     // Update the state of the app
-                    //     // _onItemTapped(1);
-                    //     // Then close the drawer
-                    //     // if (roleid == '3') {
-                    //     //   Navigator.push(
-                    //     //       context,
-                    //     //       MaterialPageRoute(
-                    //     //           builder: (context) => const KelasPage(keyword: 'nilaisiswa')));
-                    //     // } else if (roleid == '2') {
-                    //     Navigator.push(
-                    //         context,
-                    //         MaterialPageRoute(
-                    //             builder: (context) => ListKonsultasi()));
-                    //     // }
-                    //   },
-                    // ),
-                    
-                  ])
-                : const Text(''),
-            role == '2'
-                ? Column(children: [
-                    ListTile(
-                      title: const Text('Home'),
-                      selected: _selectedIndex == 0,
-                      onTap: () {
-                        // Update the state of the app
-                        // _onItemTapped(0);
-                        // Then close the drawer
-                        Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Homepage()));
-                      },
-                    ),
-                    // ListTile(
-                    //   title: const Text('Penimbangan'),
-                    //   selected: _selectedIndex == 1,
-                    //   onTap: () {
-                    //     // Update the state of the app
-                    //     // _onItemTapped(1);
-                    //     // Then close the drawer
-                    //     // if (roleid == '3') {
-                    //     //   Navigator.push(
-                    //     //       context,
-                    //     //       MaterialPageRoute(
-                    //     //           builder: (context) => const KelasPage(keyword: 'nilaisiswa')));
-                    //     // } else if (roleid == '2') {
-                    //     Navigator.push(
-                    //         context,
-                    //         MaterialPageRoute(
-                    //             builder: (context) =>
-                    //                 const PenimbanganPageUsers()));
-                    //     // }
-                    //   },
-                    // ),
-                    // ListTile(
-                    //   title: const Text('Imunisasi'),
-                    //   selected: _selectedIndex == 2,
-                    //   onTap: () {
-                    //     // Update the state of the app
-                    //     // _onItemTapped(2);
-                    //     // Then close the drawer
-
-                    //     // if (roleid == '3') {
-                    //     //   Navigator.push(
-                    //     //       context,
-                    //     //       MaterialPageRoute(
-                    //     //           builder: (context) => const KelasPage(keyword: 'jadwalpelajaranSiswa')));
-                    //     // } else if (roleid == '2') {
-                    //     Navigator.push(
-                    //         context,
-                    //         MaterialPageRoute(
-                    //             builder: (context) =>
-                    //                 const ImunisasiUsersById()));
-                    //     // }
-                    //   },
-                    // ),
-                    // ListTile(
-                    //   title: const Text('Konsultasi'),
-                    //   selected: _selectedIndex == 3,
-                    //   onTap: () {
-                    //     // Update the state of the app
-                    //     // _onItemTapped(3);
-                    //     // Then close the drawer
-                    //     Navigator.push(
-                    //         context,
-                    //         MaterialPageRoute(
-                    //             builder: (context) => KonsultasiOrtu()));
-                    //   },
-                    // ),
-                    // ListTile(
-                    //   title: const Text('Keluhan'),
-                    //   selected: _selectedIndex == 3,
-                    //   onTap: () {
-                    //     // Update the state of the app
-                    //     // _onItemTapped(3);
-                    //     // Then close the drawer
-                    //     Navigator.push(
-                    //         context,
-                    //         MaterialPageRoute(
-                    //             builder: (context) => const KeluhanPage()));
-                    //   },
-                    // ),
-                  ])
-                : const Text(''),
-          ],
-        ),
-      ),
+      
     );
   }
 }

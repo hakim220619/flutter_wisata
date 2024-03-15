@@ -9,6 +9,8 @@ import 'package:wisata/login/view/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wisata/home/HomePage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:wisata/wisata/search.dart';
+import 'package:wisata/wisata/wisatapage.dart';
 
 class HttpService {
   static final _client =http.Client() ;
@@ -38,7 +40,7 @@ class HttpService {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (BuildContext context) => const Homepage(),
+          builder: (BuildContext context) => const SearchWisataRiverpod(),
         ),
         (route) => false,
       );
@@ -50,17 +52,12 @@ class HttpService {
   }
 
   static final _registerUrl = Uri.parse('${dotenv.env['url']}/register');
-  static register(nik, name, email, password, address, jenis_kelamin, tanggal_lahir, nama_ortu, context) async {
+  static register(name, email, password, context) async {
         EasyLoading.show(status: 'loading...');
     http.Response response = await _client.post(_registerUrl, body: {
-      "nik": nik,
       "name": name,
       "email": email,
       "password": password,
-      "address": address,
-      "jenis_kelamin": jenis_kelamin,
-      "tanggal_lahir": tanggal_lahir.text,
-      "nama_ortu": nama_ortu,
     });
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body.toString());

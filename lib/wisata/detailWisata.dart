@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -11,6 +12,8 @@ import 'package:flutter_reaction_button/flutter_reaction_button.dart';
 import 'package:wisata/components/like/data.dart' as data;
 import 'package:wisata/components/like/image.dart';
 import 'package:wisata/components/like/post.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:wisata/wisata/search.dart';
 
 class DetailWisataPage extends StatefulWidget {
   const DetailWisataPage({Key? key, required this.id}) : super(key: key);
@@ -41,7 +44,7 @@ class _DetailWisataPageState extends State<DetailWisataPage> {
         // print(data);
         setState(() {
           _listsData = data['data'];
-          print(_listsData);
+          // print(_listsData[0]['rate']);
         });
       }
     } catch (e) {
@@ -64,64 +67,122 @@ class _DetailWisataPageState extends State<DetailWisataPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: RefreshIndicator(
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0.0,
+        backgroundColor: Colors.blueAccent,
+        actions: const <Widget>[],
+        title: const Text(
+          "Detail Wisata",
+          style: TextStyle(color: Colors.white),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.chevron_left),
+          onPressed: () => Navigator.pop(
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) => const SearchWisataRiverpod(),
+        ),
+       
+      ),
+        ),
+      ),
+      body: RefreshIndicator(
         onRefresh: refresh,
         child: ListView.builder(
           itemCount: 1,
           itemBuilder: (context, index) => Card(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      elevation: 2,
-      child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(vertical: 5),
-            child: Column(
-          children: [
-            InkWell(
-              onTap: () {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => DetailWisataPage(id: widget.id.toString()),
+            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            elevation: 2,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Column(
+                children: [
+                  InkWell(
+                    child: AspectRatio(
+                      aspectRatio: 2,
+                      child: Image.asset(
+                        'assets/images/wisata/pantai1.jpg',
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
-                  (route) => false,
-                );
-              },
-              child: AspectRatio(
-                aspectRatio: 2,
-                child: Image.asset(
-                  'assets/images/wisata/pantai1.jpg',
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: Text(
+                            '${_listsData[index]['nama_wisata']}',
+                            style: TextStyle(fontSize: 30, color: Colors.black),
+                          ),
+                        ),
+                        Center(
+                          child: RatingBar.builder(
+                            itemSize: 40.0,
+                            initialRating:  _listsData[index]['rate'] == null ? 0.0 : _listsData[index]['rate'].toDouble(),
+                            minRating: 1,
+                            direction: Axis.horizontal,
+                            allowHalfRating: true,
+                            itemCount: 5,
+                            itemPadding: EdgeInsets.all(10),
+                            itemBuilder: (context, _) => Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            ),
+                            onRatingUpdate: (rating) async {
+                              final _client = http.Client();
+                              final _urlRate =
+                                  Uri.parse('${dotenv.env['url']}/rate');
+                              // print(rating.toString());
+                              SharedPreferences preferences =
+                                  await SharedPreferences.getInstance();
+                              var token = preferences.getString('token');
+                              var id_user = preferences.getString('id');
+                              EasyLoading.show(status: 'loading...');
+                              http.Response response =
+                                  await _client.post(_urlRate, headers: {
+                                "Accept": "application/json",
+                                "Authorization": "Bearer $token",
+                              }, body: {
+                                "id_user": id_user.toString(),
+                                "id_wisata": widget.id.toString(),
+                                "rate": rating.toString(),
+                              });
+                              // print(response.body);
+                              // print(response.statusCode);
+                              if (response.statusCode == 200) {
+                                EasyLoading.dismiss();
+                              } else {
+                                await EasyLoading.showError(
+                                    "Error Code : ${response.statusCode.toString()}");
+                              }
+                            },
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 2,
+                        ),
+                        Text(
+                          '${_listsData[index]['description']}',
+                          style: TextStyle(fontSize: 15, color: Colors.black87),
+                        ),
+                        const SizedBox(
+                          height: 2,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('${_listsData[index]['nama_wisata']}', style: TextStyle(fontSize: 15, color: Colors.black),),
-                    const SizedBox(
-                        height: 2,
-                      ),
-                   Text('${_listsData[index]['description']}', style: TextStyle(fontSize: 15, color: Colors.black87),),
-                      const SizedBox(
-                        height: 2,
-                      ),
-                  
-                  ],
-                ),
-              ),
-            
-          ],
-        ),
+            // ),
           ),
-          // ),
         ),
       ),
-      )
     );
   }
 }
