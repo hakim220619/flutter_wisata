@@ -160,12 +160,12 @@ class SearchWisataRiverpod extends ConsumerWidget {
                       final user = searchController.isNotEmpty
                           ? searchController[index]
                           : data['data'][index];
-                      // print();
+                      // print(user['rate']);
                       return PostWidget(
                         id: user['id'].toString(),
                         rate: user['rate'] == null
                             ? 0.0
-                            : user['rate'].toDouble(),
+                            : double.parse(user['rate']),
                         title: _title(title: user['nama_wisata']),
                         description: _content(desc: user['keterangan']),
                         // imgPath: '${dotenv.env['url']}/storage/images/wisata/${user['image']}',

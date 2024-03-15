@@ -123,7 +123,7 @@ class _DetailWisataPageState extends State<DetailWisataPage> {
                         Center(
                           child: RatingBar.builder(
                             itemSize: 40.0,
-                            initialRating:  _listsData[index]['rate'] == null ? 0.0 : _listsData[index]['rate'].toDouble(),
+                            initialRating:  _listsData[index]['rate'] == null ? 0.0 : double.parse(_listsData[index]['rate']),
                             minRating: 1,
                             direction: Axis.horizontal,
                             allowHalfRating: true,
