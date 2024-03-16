@@ -9,11 +9,12 @@ import 'package:wisata/login/view/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wisata/home/HomePage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:wisata/wisata/listwisataadmin.dart';
 import 'package:wisata/wisata/search.dart';
 import 'package:wisata/wisata/wisatapage.dart';
 
 class HttpService {
-  static final _client =http.Client() ;
+  static final _client = http.Client();
 
   static final _loginUrl = Uri.parse('${dotenv.env['url']}/login');
 
@@ -36,14 +37,23 @@ class HttpService {
       await pref.setString("role", Users['userData']['role'].toString());
       await pref.setString("token", Users['token']);
       await pref.setBool("is_login", true);
-
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (BuildContext context) => const SearchWisataRiverpod(),
-        ),
-        (route) => false,
-      );
+      if (Users['userData']['role'].toString() == '1') {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => const ListWisataAdminPage(),
+          ),
+          (route) => false,
+        );
+      } else {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => const SearchWisataRiverpod(),
+          ),
+          (route) => false,
+        );
+      }
     } else {
       print(response);
       EasyLoading.showError('Login Gagal');
@@ -53,7 +63,7 @@ class HttpService {
 
   static final _registerUrl = Uri.parse('${dotenv.env['url']}/register');
   static register(name, email, password, context) async {
-        EasyLoading.show(status: 'loading...');
+    EasyLoading.show(status: 'loading...');
     http.Response response = await _client.post(_registerUrl, body: {
       "name": name,
       "email": email,
@@ -67,12 +77,12 @@ class HttpService {
       } else {
         EasyLoading.dismiss();
         Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (BuildContext context) => const LoginPage(),
-        ),
-        (route) => false,
-      );
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => const LoginPage(),
+          ),
+          (route) => false,
+        );
       }
     } else {
       await EasyLoading.showError(

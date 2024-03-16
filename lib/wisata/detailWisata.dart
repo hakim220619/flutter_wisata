@@ -102,8 +102,8 @@ class _DetailWisataPageState extends State<DetailWisataPage> {
                   InkWell(
                     child: AspectRatio(
                       aspectRatio: 2,
-                      child: Image.asset(
-                        'assets/images/wisata/pantai1.jpg',
+                      child: Image.network(
+                        '${dotenv.env['url_image']}storage/images/wisata/${_listsData[index]['image']}',
                         width: double.infinity,
                         fit: BoxFit.cover,
                       ),
@@ -116,14 +116,14 @@ class _DetailWisataPageState extends State<DetailWisataPage> {
                       children: [
                         Center(
                           child: Text(
-                            '${_listsData[index]['nama_wisata']}',
+                            '${_listsData[index]['nama_wisata'].toString()}',
                             style: TextStyle(fontSize: 30, color: Colors.black),
                           ),
                         ),
                         Center(
                           child: RatingBar.builder(
                             itemSize: 40.0,
-                            initialRating:  _listsData[index]['rate'] == null ? 0.0 : double.parse(_listsData[index]['rate']),
+                            initialRating: dotenv.env['production'] == 'false' ?  _listsData[index]['rate'].toDouble() : _listsData[index]['rate'] == null ? 0.0 : double.parse(_listsData[index]['rate']),
                             minRating: 1,
                             direction: Axis.horizontal,
                             allowHalfRating: true,
@@ -167,7 +167,7 @@ class _DetailWisataPageState extends State<DetailWisataPage> {
                           height: 2,
                         ),
                         Text(
-                          '${_listsData[index]['description']}',
+                          '${_listsData[index]['description'].toString()}',
                           style: TextStyle(fontSize: 15, color: Colors.black87),
                         ),
                         const SizedBox(

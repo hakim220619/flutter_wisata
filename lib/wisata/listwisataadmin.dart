@@ -3,7 +3,9 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wisata/components/like/post.dart';
 import 'package:wisata/login/view/login.dart';
+import 'package:wisata/wisata/addwisataadminpage.dart';
 import 'package:wisata/wisata/detailWisata.dart';
+import 'package:wisata/wisata/editwisataadmin.dart';
 import 'package:wisata/wisata/providers.dart';
 import 'package:wisata/wisata/search_controller.dart';
 import 'package:flutter/material.dart';
@@ -11,8 +13,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wisata/components/like/data.dart' as react;
 import 'package:http/http.dart' as http;
 
-class SearchWisataRiverpod extends ConsumerWidget {
-  const SearchWisataRiverpod({super.key});
+class ListWisataAdminPage extends ConsumerWidget {
+  const ListWisataAdminPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -79,37 +81,46 @@ class SearchWisataRiverpod extends ConsumerWidget {
       );
     }
 
+    void addwisata() {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) => const AddWisataAdminPage(),
+        ),
+      );
+    }
+
     final getAllUser = ref.watch(getUserProvider);
     final searchText = ref.watch(searchUserProvider);
     final searchController = ref.watch(searchControllerProvider);
     // final stateKey = ref.watch();
     return GestureDetector(
-        child: Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Wisata',
-          style: TextStyle(color: Colors.white),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.blue,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.power_settings_new),
-            onPressed: () {
-              _showMyDialog('Log Out', 'Are you sure you want to logout?', 'No',
-                  'Yes', () async {}, false);
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Wisata',
+            style: TextStyle(color: Colors.white),
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.blue,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.power_settings_new),
+              onPressed: () {
+                _showMyDialog('Log Out', 'Are you sure you want to logout?',
+                    'No', 'Yes', () async {}, false);
 
-              // ignore: unused_label
-              child:
-              Text(
-                'Log Out',
-                style: TextStyle(color: Colors.white),
-              );
-            },
-          )
-        ],
-      ),
-      body: RefreshIndicator(
+                // ignore: unused_label
+                child:
+                Text(
+                  'Log Out',
+                  style: TextStyle(color: Colors.white),
+                );
+              },
+            )
+          ],
+        ),
+        body: RefreshIndicator(
           onRefresh: () async => ref.refresh(getUserProvider),
           child: getAllUser.when(
             data: (data) => Padding(
@@ -132,9 +143,8 @@ class SearchWisataRiverpod extends ConsumerWidget {
                         ref
                             .watch(searchControllerProvider.notifier)
                             .onSearchUser(searchText, data['data']);
-                            
                       },
-                      onTapOutside: (value){
+                      onTapOutside: (value) {
                         ref
                             .watch(searchControllerProvider.notifier)
                             .onSearchUser(searchText, data['data']);
@@ -157,14 +167,34 @@ class SearchWisataRiverpod extends ConsumerWidget {
                         ? searchController.length
                         : data['data'].length,
                     itemBuilder: (context, index) {
-                      // print(data['data']);
+
                       final user = searchController.isNotEmpty
                           ? searchController[index]
                           : data['data'][index];
-                      // print(user['rate']);
                       return InkWell(
                         onTap: () async {
-                          
+                          late SharedPreferences profileData;
+                          String? role;
+                          profileData = await SharedPreferences.getInstance();
+                          role = profileData.getString('role');
+                          if (role == '1') {
+                            // ignore: use_build_context_synchronously
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    EditWisataAdminPage(
+                                  id: user['id'].toString(),
+                                  namaWisata: user['nama_wisata'].toString(),
+                                  keterangan: user['keterangan'].toString(),
+                                  description: user['description'].toString(),
+                                  tag: user['tag'].toString(),
+                                  tag1: user['tag1'].toString(),
+                                  image: user['image'].toString(),
+                                ),
+                              ),
+                            );
+                          } else {
                             // ignore: use_build_context_synchronously
                             Navigator.push(
                               context,
@@ -173,18 +203,20 @@ class SearchWisataRiverpod extends ConsumerWidget {
                                     DetailWisataPage(id: user['id'].toString()),
                               ),
                             );
+                          }
                         },
+                        
                         child: PostWidget(
                           id: user['id'].toString(),
                           rate: user['rate'] == null
-                                ? 0.0
-                                // ignore: unrelated_type_equality_checks
-                                : dotenv.env['production'] == 'false'
-                                    ? user['rate'].toDouble()
-                                    : double.parse(user['rate']),
+                              ? 0.0
+                              // ignore: unrelated_type_equality_checks
+                              : dotenv.env['production'] == 'false'
+                                  ? user['rate'].toDouble()
+                                  : double.parse(user['rate']),
                           title: _title(title: user['nama_wisata']),
                           description: _content(desc: user['keterangan']),
-                          imgPath: '${dotenv.env['url_image']}/storage/images/wisata/${user['image']}',
+                          imgPath: '${dotenv.env['url_image']}storage/images/wisata/${user['image']}',
                           // imgPath: 'assets/images/wisata/pantai1.jpg',
                           reactions: react.reactions,
                         ),
@@ -208,8 +240,15 @@ class SearchWisataRiverpod extends ConsumerWidget {
                 child: CircularProgressIndicator(),
               ),
             ),
-          )),
-    ));
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: addwisata,
+          tooltip: 'Increment',
+          child: Icon(Icons.add),
+        ), // Th
+      ),
+    );
   }
 }
 

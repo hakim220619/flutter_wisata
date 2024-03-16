@@ -49,6 +49,7 @@ dependencies:
   comment_box: ^0.0.18
   chat_bubbles: ^1.6.0
   flutter_rating_bar: ^4.0.1
+  image_picker: ^1.0.7
 
 dev_dependencies:
   flutter_test:

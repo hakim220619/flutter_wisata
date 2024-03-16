@@ -11,6 +11,7 @@ import 'package:comment_box/comment/test.dart';
 import 'package:comment_box/main.dart';
 import 'package:wisata/wisata/detailWisata.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:wisata/wisata/editwisataadmin.dart';
 
 class PostWidget extends StatefulWidget {
   const PostWidget({
@@ -147,6 +148,14 @@ class _PostWidgetState extends State<PostWidget> {
     super.initState();
     // print(widget.id);
   }
+    late SharedPreferences profileData;
+    String? role;
+  void initial() async {
+    profileData = await SharedPreferences.getInstance();
+    setState(() {
+      role = profileData.getString('role');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -160,18 +169,10 @@ class _PostWidgetState extends State<PostWidget> {
         child: Column(
           children: [
             InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        DetailWisataPage(id: widget.id.toString()),
-                  ),
-                );
-              },
+              
               child: AspectRatio(
                 aspectRatio: 2,
-                child: Image.asset(
+                child: Image.network(
                   widget.imgPath,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -186,21 +187,21 @@ class _PostWidgetState extends State<PostWidget> {
                   children: [
                     if (widget.title != null) widget.title!,
                     RatingBar.builder(
-                        itemSize: 20,
-                        initialRating: widget.rate.toDouble(),
-                        minRating: 1,
-                        direction: Axis.horizontal,
-                        allowHalfRating: true,
-                        itemCount: 5,
-                        itemPadding: EdgeInsets.all(10),
-                        itemBuilder: (context, _) => Icon(
-                          Icons.star,
-                          color: Colors.amber,
-                        ),
-                        onRatingUpdate: (rating) {
-                          print(rating);
-                        },
+                      itemSize: 20,
+                      initialRating: widget.rate.toDouble(),
+                      minRating: 1,
+                      direction: Axis.horizontal,
+                      allowHalfRating: true,
+                      itemCount: 5,
+                      itemPadding: EdgeInsets.all(10),
+                      itemBuilder: (context, _) => Icon(
+                        Icons.star,
+                        color: Colors.amber,
                       ),
+                      onRatingUpdate: (rating) {
+                        print(rating);
+                      },
+                    ),
                     if (widget.title != null && widget.description != null)
                       const SizedBox(
                         height: 2,
@@ -209,39 +210,39 @@ class _PostWidgetState extends State<PostWidget> {
                   ],
                 ),
               ),
+               role == '2' ?
             Center(
-                    child: Container(
-              height: 55,
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-              child:
-                   Row(
-                      children: [
-                        
-                        Icon(
-                          Icons.message,
-                          size: 14,
-                          color: Colors.grey[400],
-                        ),
-                        const SizedBox(width: 5),
-                        InkWell(
-                          child: Text(
-                            'Comment',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey[600],
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          onTap: () {
-                            lisComment();
-                          },
-                        ),
-                      ],
+              child: Container(
+                height: 55,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                child: Row(
+                  children: [
+                   
+                    Icon(
+                      Icons.message,
+                      size: 14,
+                      color: Colors.grey[400],
                     ),
-                  ),
-                
-              
-            ),
+                    const SizedBox(width: 5),
+                    
+                    InkWell(
+                      child: Text(
+                        'Comment',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      onTap: () {
+                        lisComment();
+                      },
+                    )
+                  ],
+                ),
+              ),
+            ) : const Text('')
           ],
         ),
       ),
