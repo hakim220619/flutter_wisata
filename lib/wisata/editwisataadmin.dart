@@ -21,8 +21,8 @@ class EditWisataAdminPage extends StatefulWidget {
       required this.description,
       required this.tag,
       required this.tag1,
-      required this.image
-      })
+      required this.image,
+      required this.wilayah})
       : super(key: key);
   final String id;
   final String namaWisata;
@@ -31,6 +31,7 @@ class EditWisataAdminPage extends StatefulWidget {
   final String tag;
   final String tag1;
   final String image;
+  final String wilayah;
 
   @override
   _EditWisataAdminPageState createState() => _EditWisataAdminPageState();
@@ -47,7 +48,8 @@ class _EditWisataAdminPageState extends State<EditWisataAdminPage> {
   String _tag = '';
   String _tag1 = '';
   // ignore: override_on_non_overriding_member
-   String? imagePath;
+  String? imagePath;
+  var _wilayahAll;
 
   @override
   void dispose() {
@@ -58,10 +60,11 @@ class _EditWisataAdminPageState extends State<EditWisataAdminPage> {
   TextEditingController tanggal_lahir = TextEditingController();
 
   Widget build(BuildContext context) {
-    // final List<String> nameList = <String>[
-    //   "Laki-Laki",
-    //   "Perempuan",
-    // ];
+    final List<String> wisatalist = <String>[
+      "Bengkalis",
+      "Dumai",
+      "Siak Sri Indrapura",
+    ];
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
@@ -227,19 +230,59 @@ class _EditWisataAdminPageState extends State<EditWisataAdminPage> {
                         const SizedBox(
                           height: 20,
                         ),
+                        DropdownButtonFormField(
+                          decoration: InputDecoration(
+                              prefixIcon:
+                                  const Icon(Icons.format_align_justify),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              hintText: 'Wilayah'),
+                          isExpanded: true,
+                          items: wisatalist.map(
+                            (item) {
+                              return DropdownMenuItem(
+                                value: item,
+                                child: Text(item),
+                              );
+                            },
+                          ).toList(),
+                          validator: (value) {
+                            if (value == null) return 'Silahkan Masukan Data';
+                            return null;
+                          },
+                          value: widget.wilayah,
+                          onChanged: (vale) {
+                            setState(() {
+                              _wilayahAll = vale;
+                            });
+                          },
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
                         InkWell(
                             onTap: () async {
+                              // print(imagePath);
                               if (_formKey.currentState!.validate()) {
-                                await HttpServiceWisata().updateWisata(  
-                                  widget.id,
-                                 _namawisata == '' ? widget.namaWisata : _namawisata,
-                                _keterangan == '' ? widget.keterangan : _keterangan,
-                                _description == '' ? widget.description : _description,
-                                _tag == '' ? widget.tag : _tag,
-                                _tag1 == '' ? widget.tag1 : _tag1,
-                               imagePath,
-                               context);
-                                
+                                await HttpServiceWisata().updateWisata(
+                                    widget.id,
+                                    _namawisata == ''
+                                        ? widget.namaWisata
+                                        : _namawisata,
+                                    _keterangan == ''
+                                        ? widget.keterangan
+                                        : _keterangan,
+                                    _description == ''
+                                        ? widget.description
+                                        : _description,
+                                    _tag == '' ? widget.tag : _tag,
+                                    _tag1 == '' ? widget.tag1 : _tag1,
+                                    imagePath,
+                                    _wilayahAll == null
+                                        ? widget.wilayah
+                                        : _wilayahAll,
+                                    context);
                               }
                             },
                             child: Container(
@@ -262,10 +305,8 @@ class _EditWisataAdminPageState extends State<EditWisataAdminPage> {
                         InkWell(
                             onTap: () async {
                               if (_formKey.currentState!.validate()) {
-                                await HttpServiceWisata().delete(  
-                                  widget.id,
-                               context);
-                                
+                                await HttpServiceWisata()
+                                    .delete(widget.id, context);
                               }
                             },
                             child: Container(
@@ -293,38 +334,35 @@ class _EditWisataAdminPageState extends State<EditWisataAdminPage> {
             )));
   }
 
- Widget containerImageWidget(BuildContext context) {
+  Widget containerImageWidget(BuildContext context) {
     return GestureDetector(
-      onTap: () async {
-        final path = await chooseImage();
-        setState(() {
-          imagePath = path;
-          // print(imagePath);
-        });
-      },
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        height: 200,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.black.withOpacity(.40)
+        onTap: () async {
+          final path = await chooseImage();
+          setState(() {
+            imagePath = path;
+            // print(imagePath);
+          });
+        },
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: 200,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.black.withOpacity(.40)),
+            borderRadius: BorderRadius.circular(4),
+            image: imagePath != null
+                ? DecorationImage(
+                    image: FileImage(File(imagePath!)), fit: BoxFit.cover)
+                : DecorationImage(
+                    image: NetworkImage(
+                        '${dotenv.env['url_image']}storage/images/wisata/${widget.image}'),
+                    fit: BoxFit.fill,
+                  ),
           ),
-          borderRadius: BorderRadius.circular(4),
-          image: imagePath != null ?
-            DecorationImage(
-              image: FileImage(File(imagePath!)),
-              fit: BoxFit.cover
-            ) : DecorationImage(
-      image: NetworkImage('${dotenv.env['url_image']}storage/images/wisata/${widget.image}'),
-      fit: BoxFit.fill,
-    ),
-        ),
-        child: Visibility(
-          visible: imagePath == null ? true : false,
-          child: const Text('Pilih gambar')
-        ),)
-    );
+          child: Visibility(
+              visible: imagePath == null ? true : false,
+              child: const Text('Pilih gambar')),
+        ));
   }
 }
 

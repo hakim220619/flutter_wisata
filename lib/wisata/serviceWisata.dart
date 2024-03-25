@@ -15,8 +15,8 @@ import 'package:wisata/wisata/wisatapage.dart';
 
 class HttpServiceWisata {
   Future<void> updateWisata(id, nama_wisata, keterangan, description, tag, tag1,
-      gambar, context) async {
-    // print(imagePath);
+      gambar, wilayah, context) async {
+    // print(gambar);
     SharedPreferences preferences = await SharedPreferences.getInstance();
     var token = preferences.getString('token');
     var url = Uri.parse('${dotenv.env['url']}/update-wisata');
@@ -29,6 +29,7 @@ class HttpServiceWisata {
     request.fields['description'] = description;
     request.fields['tag'] = tag;
     request.fields['tag1'] = tag1;
+    request.fields['wilayah'] = wilayah;
     request.files.add(imagepath);
 
     request.headers['Authorization'] = 'Bearer $token';
@@ -38,7 +39,7 @@ class HttpServiceWisata {
     final response = await request.send();
     var responseData = await response.stream.toBytes();
     var responseString = String.fromCharCodes(responseData);
-    print(responseString);
+    // print(responseString);
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -48,7 +49,7 @@ class HttpServiceWisata {
   }
 
   Future<void> addWisata(
-      nama_wisata, keterangan, description, tag, tag1, gambar, context) async {
+      nama_wisata, keterangan, description, tag, tag1, wilayah, gambar, context) async {
     // print(imagePath);
     SharedPreferences preferences = await SharedPreferences.getInstance();
     var token = preferences.getString('token');
@@ -61,6 +62,7 @@ class HttpServiceWisata {
     request.fields['description'] = description;
     request.fields['tag'] = tag;
     request.fields['tag1'] = tag1;
+    request.fields['wilayah'] = wilayah;
     request.files.add(imagepath);
 
     request.headers['Authorization'] = 'Bearer $token';

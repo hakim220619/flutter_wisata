@@ -10,10 +10,25 @@ class SearchUserController extends StateNotifier<List> {
 
   void onSearchUser(String query, List<dynamic> data) {
     state = [];
-    // print(query);
+    print(query);
     
       final result = data
           .where((element) => element['nama_wisata']
+              .toString()
+              .toLowerCase()
+              .contains(query.toString().toLowerCase()))
+          .toSet()
+          .toList();
+          // print(result);
+      state.addAll(result);
+    
+  }
+  void onTap(String query, List<dynamic> data) {
+    state = [];
+    // print(query);
+    
+      final result = data
+          .where((element) => element['wilayah']
               .toString()
               .toLowerCase()
               .contains(query.toString().toLowerCase()))

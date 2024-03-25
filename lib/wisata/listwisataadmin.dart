@@ -191,6 +191,7 @@ class ListWisataAdminPage extends ConsumerWidget {
                                   tag: user['tag'].toString(),
                                   tag1: user['tag1'].toString(),
                                   image: user['image'].toString(),
+                                  wilayah: user['wilayah'].toString(),
                                 ),
                               ),
                             );

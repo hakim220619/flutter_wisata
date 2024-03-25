@@ -132,13 +132,12 @@ class SearchWisataRiverpod extends ConsumerWidget {
                         ref
                             .watch(searchControllerProvider.notifier)
                             .onSearchUser(searchText, data['data']);
-                            
                       },
-                      onTapOutside: (value){
-                        ref
-                            .watch(searchControllerProvider.notifier)
-                            .onSearchUser(searchText, data['data']);
-                      },
+                      // onTapOutside: (value) {
+                      //   ref
+                      //       .watch(searchControllerProvider.notifier)
+                      //       .onSearchUser(searchText, data['data']);
+                      // },
                       decoration: InputDecoration(
                         hintText: 'Search',
                         border: OutlineInputBorder(
@@ -146,6 +145,47 @@ class SearchWisataRiverpod extends ConsumerWidget {
                         ),
                       ),
                     ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      InkWell(
+                        child: const Text('Bengkalis'),
+                        onTap: () {
+                           ref
+                            .watch(searchUserProvider.notifier)
+                            .update((state) => state = 'Bengkalis');
+                          ref
+                              .watch(searchControllerProvider.notifier)
+                              .onTap('Bengkalis', data['data']);
+                        },
+                      ),
+                      InkWell(
+                        child: const Text('Dumai'),
+                        onTap: () {
+                           ref
+                            .watch(searchUserProvider.notifier)
+                            .update((state) => state = 'Dumai');
+                          ref
+                              .watch(searchControllerProvider.notifier)
+                              .onTap('Dumai', data['data']);
+                        },
+                      ),
+                      InkWell(
+                        child: const Text('Siak Sri Indrapura'),
+                        onTap: () {
+                           ref
+                            .watch(searchUserProvider.notifier)
+                            .update((state) => state = 'Siak Sri Indrapura');
+                          ref
+                              .watch(searchControllerProvider.notifier)
+                              .onTap('Siak Sri Indrapura', data['data']);
+                        },
+                      ),
+                    ],
                   ),
                   const SizedBox(
                     height: 10,
@@ -164,27 +204,27 @@ class SearchWisataRiverpod extends ConsumerWidget {
                       // print(user['rate']);
                       return InkWell(
                         onTap: () async {
-                          
-                            // ignore: use_build_context_synchronously
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    DetailWisataPage(id: user['id'].toString()),
-                              ),
-                            );
+                          // ignore: use_build_context_synchronously
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  DetailWisataPage(id: user['id'].toString()),
+                            ),
+                          );
                         },
                         child: PostWidget(
                           id: user['id'].toString(),
                           rate: user['rate'] == null
-                                ? 0.0
-                                // ignore: unrelated_type_equality_checks
-                                : dotenv.env['production'] == 'false'
-                                    ? user['rate'].toDouble()
-                                    : double.parse(user['rate']),
+                              ? 0.0
+                              // ignore: unrelated_type_equality_checks
+                              : dotenv.env['production'] == 'false'
+                                  ? user['rate'].toDouble()
+                                  : double.parse(user['rate']),
                           title: _title(title: user['nama_wisata']),
                           description: _content(desc: user['keterangan']),
-                          imgPath: '${dotenv.env['url_image']}/storage/images/wisata/${user['image']}',
+                          imgPath:
+                              '${dotenv.env['url_image']}/storage/images/wisata/${user['image']}',
                           // imgPath: 'assets/images/wisata/pantai1.jpg',
                           reactions: react.reactions,
                         ),

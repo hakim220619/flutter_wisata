@@ -29,6 +29,7 @@ class _AddWisataAdminPageState extends State<AddWisataAdminPage> {
   String _description = '';
   String _tag = '';
   String _tag1 = '';
+  String? wilayah;
   // ignore: override_on_non_overriding_member
   String? imagePath;
 
@@ -41,10 +42,11 @@ class _AddWisataAdminPageState extends State<AddWisataAdminPage> {
   TextEditingController tanggal_lahir = TextEditingController();
 
   Widget build(BuildContext context) {
-    // final List<String> nameList = <String>[
-    //   "Laki-Laki",
-    //   "Perempuan",
-    // ];
+    final List<String> wisata = <String>[
+      "Bengkalis",
+      "Dumai",
+      "Siak Sri Indrapura",
+    ];
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
@@ -205,6 +207,37 @@ class _AddWisataAdminPageState extends State<AddWisataAdminPage> {
                         const SizedBox(
                           height: 20,
                         ),
+                        DropdownButtonFormField(
+                          decoration: InputDecoration(
+                              prefixIcon:
+                                  const Icon(Icons.format_align_justify),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              hintText: 'Wilayah'),
+                          isExpanded: true,
+                          items: wisata.map(
+                            (item) {
+                              return DropdownMenuItem(
+                                value: item,
+                                child: Text(item),
+                              );
+                            },
+                          ).toList(),
+                          validator: (value) {
+                            if (value == null) return 'Silahkan Masukan Data';
+                            return null;
+                          },
+                          value: wilayah,
+                          onChanged: (vale) {
+                            setState(() {
+                              wilayah = vale;
+                            });
+                          },
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
                         InkWell(
                             onTap: () async {
                               if (_formKey.currentState!.validate()) {
@@ -214,6 +247,7 @@ class _AddWisataAdminPageState extends State<AddWisataAdminPage> {
                                     _description,
                                     _tag,
                                     _tag1,
+                                    wilayah,
                                     imagePath,
                                     context);
                               }
