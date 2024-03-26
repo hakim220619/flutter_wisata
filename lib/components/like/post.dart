@@ -210,7 +210,7 @@ class _PostWidgetState extends State<PostWidget> {
                   ],
                 ),
               ),
-               role == '2' ?
+               
             Center(
               child: Container(
                 height: 55,
@@ -242,7 +242,7 @@ class _PostWidgetState extends State<PostWidget> {
                   ],
                 ),
               ),
-            ) : const Text('')
+            ) 
           ],
         ),
       ),

@@ -16,6 +16,7 @@ final getUserProvider = FutureProvider<Map<String, dynamic>>((ref) async {
       });
  
   final jsonResponse = jsonDecode(response.body);
+  print(jsonResponse);
   return jsonResponse;
 });
 

@@ -2,6 +2,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wisata/components/like/post.dart';
+import 'package:wisata/components/like/postadmin.dart';
 import 'package:wisata/login/view/login.dart';
 import 'package:wisata/wisata/addwisataadminpage.dart';
 import 'package:wisata/wisata/detailWisata.dart';
@@ -144,11 +145,7 @@ class ListWisataAdminPage extends ConsumerWidget {
                             .watch(searchControllerProvider.notifier)
                             .onSearchUser(searchText, data['data']);
                       },
-                      onTapOutside: (value) {
-                        ref
-                            .watch(searchControllerProvider.notifier)
-                            .onSearchUser(searchText, data['data']);
-                      },
+                    
                       decoration: InputDecoration(
                         hintText: 'Search',
                         border: OutlineInputBorder(
@@ -156,6 +153,47 @@ class ListWisataAdminPage extends ConsumerWidget {
                         ),
                       ),
                     ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      InkWell(
+                        child: const Text('Bengkalis'),
+                        onTap: () {
+                           ref
+                            .watch(searchUserProvider.notifier)
+                            .update((state) => state = 'Bengkalis');
+                          ref
+                              .watch(searchControllerProvider.notifier)
+                              .onTap('Bengkalis', data['data']);
+                        },
+                      ),
+                      InkWell(
+                        child: const Text('Dumai'),
+                        onTap: () {
+                           ref
+                            .watch(searchUserProvider.notifier)
+                            .update((state) => state = 'Dumai');
+                          ref
+                              .watch(searchControllerProvider.notifier)
+                              .onTap('Dumai', data['data']);
+                        },
+                      ),
+                      InkWell(
+                        child: const Text('Siak Sri Indrapura'),
+                        onTap: () {
+                           ref
+                            .watch(searchUserProvider.notifier)
+                            .update((state) => state = 'Siak Sri Indrapura');
+                          ref
+                              .watch(searchControllerProvider.notifier)
+                              .onTap('Siak Sri Indrapura', data['data']);
+                        },
+                      ),
+                    ],
                   ),
                   const SizedBox(
                     height: 10,
@@ -207,7 +245,7 @@ class ListWisataAdminPage extends ConsumerWidget {
                           }
                         },
                         
-                        child: PostWidget(
+                        child: PostWidgetAdmin(
                           id: user['id'].toString(),
                           rate: user['rate'] == null
                               ? 0.0
