@@ -12,6 +12,7 @@ import 'package:comment_box/main.dart';
 import 'package:wisata/wisata/detailWisata.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:wisata/wisata/editwisataadmin.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 class PostWidget extends StatefulWidget {
   const PostWidget({
@@ -148,8 +149,9 @@ class _PostWidgetState extends State<PostWidget> {
     super.initState();
     // print(widget.id);
   }
-    late SharedPreferences profileData;
-    String? role;
+
+  late SharedPreferences profileData;
+  String? role;
   void initial() async {
     profileData = await SharedPreferences.getInstance();
     setState(() {
@@ -159,6 +161,16 @@ class _PostWidgetState extends State<PostWidget> {
 
   @override
   Widget build(BuildContext context) {
+    int _current = 0;
+    final CarouselController _controller = CarouselController();
+    final List<String> imgList = [
+      'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80',
+      'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80',
+      'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=94a1e718d89ca60a6337a6008341ca50&auto=format&fit=crop&w=1950&q=80',
+      'https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=89719a0d55dd05e2deae4120227e6efc&auto=format&fit=crop&w=1953&q=80',
+      'https://images.unsplash.com/photo-1508704019882-f9cf40e475b4?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=8c6e5e3aba713b17aa1fe71ab4f0ae5b&auto=format&fit=crop&w=1352&q=80',
+      'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80'
+    ];
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       elevation: 2,
@@ -169,14 +181,19 @@ class _PostWidgetState extends State<PostWidget> {
         child: Column(
           children: [
             InkWell(
-              
               child: AspectRatio(
                 aspectRatio: 2,
-                child: Image.network(
-                  widget.imgPath,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+                child: Container(
+                    child: CarouselSlider(
+                  options: CarouselOptions(),
+                  items: imgList
+                      .map((item) => Container(
+                            child: Center(
+                                child: Image.network(item,
+                                    fit: BoxFit.cover, width: 1000)),
+                          ))
+                      .toList(),
+                )),
               ),
             ),
             if (widget.title != null || widget.description != null)
@@ -210,7 +227,6 @@ class _PostWidgetState extends State<PostWidget> {
                   ],
                 ),
               ),
-               
             Center(
               child: Container(
                 height: 55,
@@ -218,14 +234,12 @@ class _PostWidgetState extends State<PostWidget> {
                     const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                 child: Row(
                   children: [
-                   
                     Icon(
                       Icons.message,
                       size: 14,
                       color: Colors.grey[400],
                     ),
                     const SizedBox(width: 5),
-                    
                     InkWell(
                       child: Text(
                         'Comment',
@@ -242,7 +256,7 @@ class _PostWidgetState extends State<PostWidget> {
                   ],
                 ),
               ),
-            ) 
+            )
           ],
         ),
       ),
@@ -278,9 +292,8 @@ Widget commentChild(data) {
               _listsData[i]['name'],
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            subtitle: Text(_listsData[i]['comment']),
-            trailing: Text(_listsData[i]['created_at'],
-                style: TextStyle(fontSize: 10)),
+            subtitle: Text(
+                '${_listsData[i]['comment']} \n${_listsData[i]['created_at']}'),
           ),
         )
     ],

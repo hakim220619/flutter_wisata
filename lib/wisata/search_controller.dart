@@ -13,7 +13,7 @@ class SearchUserController extends StateNotifier<List> {
     print(query);
     
       final result = data
-          .where((element) => element['nama_wisata']
+          .where((element) => element['keterangan']
               .toString()
               .toLowerCase()
               .contains(query.toString().toLowerCase()))
