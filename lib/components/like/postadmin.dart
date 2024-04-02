@@ -13,6 +13,7 @@ import 'package:comment_box/main.dart';
 import 'package:wisata/wisata/detailWisata.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:wisata/wisata/editwisataadmin.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 class PostWidgetAdmin extends StatefulWidget {
   const PostWidgetAdmin({
@@ -20,13 +21,19 @@ class PostWidgetAdmin extends StatefulWidget {
     this.id,
     this.title,
     required this.rate,
-    required this.imgPath,
+    required this.imgPath1,
+    required this.imgPath2,
+    required this.imgPath3,
+    required this.imgPath4,
     required this.reactions,
     this.description,
   }) : super(key: key);
 
   final String? id;
-  final String imgPath;
+  final String imgPath1;
+  final String imgPath2;
+  final String imgPath3;
+  final String imgPath4;
   final double rate;
 
   final Widget? title;
@@ -158,6 +165,14 @@ class _PostWidgetAdminState extends State<PostWidgetAdmin> {
 
   @override
   Widget build(BuildContext context) {
+    int _current = 0;
+    final CarouselController _controller = CarouselController();
+    final List<String> imgList = [
+      widget.imgPath1,
+      widget.imgPath2,
+      widget.imgPath3,
+      widget.imgPath4,
+    ];
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       elevation: 2,
@@ -170,11 +185,17 @@ class _PostWidgetAdminState extends State<PostWidgetAdmin> {
             InkWell(
               child: AspectRatio(
                 aspectRatio: 2,
-                child: Image.network(
-                  widget.imgPath,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+                child: Container(
+                    child: CarouselSlider(
+                  options: CarouselOptions(),
+                  items: imgList
+                      .map((item) => Container(
+                            child: Center(
+                                child: Image.network(item,
+                                    fit: BoxFit.cover, width: 1000)),
+                          ))
+                      .toList(),
+                )),
               ),
             ),
             if (widget.title != null || widget.description != null)

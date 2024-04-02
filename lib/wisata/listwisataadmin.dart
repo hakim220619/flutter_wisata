@@ -228,7 +228,10 @@ class ListWisataAdminPage extends ConsumerWidget {
                                   description: user['description'].toString(),
                                   tag: user['tag'].toString(),
                                   tag1: user['tag1'].toString(),
-                                  image: user['image'].toString(),
+                                  image1: user['image1'].toString(),
+                                  image2: user['image2'].toString(),
+                                  image3: user['image3'].toString(),
+                                  image4: user['image4'].toString(),
                                   wilayah: user['wilayah'].toString(),
                                 ),
                               ),
@@ -255,7 +258,14 @@ class ListWisataAdminPage extends ConsumerWidget {
                                   : double.parse(user['rate']),
                           title: _title(title: user['nama_wisata']),
                           description: _content(desc: user['keterangan']),
-                          imgPath: '${dotenv.env['url_image']}storage/images/wisata/${user['image']}',
+                          imgPath1:
+                              '${dotenv.env['url_image']}/storage/images/wisata/${user['image1']}',
+                          imgPath2:
+                              '${dotenv.env['url_image']}/storage/images/wisata/${user['image2']}',
+                          imgPath3:
+                              '${dotenv.env['url_image']}/storage/images/wisata/${user['image3']}',
+                          imgPath4:
+                              '${dotenv.env['url_image']}/storage/images/wisata/${user['image4']}',
                           // imgPath: 'assets/images/wisata/pantai1.jpg',
                           reactions: react.reactions,
                         ),

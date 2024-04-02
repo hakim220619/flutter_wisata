@@ -223,8 +223,14 @@ class SearchWisataRiverpod extends ConsumerWidget {
                                   : double.parse(user['rate']),
                           title: _title(title: user['nama_wisata']),
                           description: _content(desc: user['keterangan']),
-                          imgPath:
-                              '${dotenv.env['url_image']}/storage/images/wisata/${user['image']}',
+                          imgPath1:
+                              '${dotenv.env['url_image']}/storage/images/wisata/${user['image1']}',
+                          imgPath2:
+                              '${dotenv.env['url_image']}/storage/images/wisata/${user['image2']}',
+                          imgPath3:
+                              '${dotenv.env['url_image']}/storage/images/wisata/${user['image3']}',
+                          imgPath4:
+                              '${dotenv.env['url_image']}/storage/images/wisata/${user['image4']}',
                           // imgPath: 'assets/images/wisata/pantai1.jpg',
                           reactions: react.reactions,
                         ),

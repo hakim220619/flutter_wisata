@@ -15,14 +15,17 @@ import 'package:wisata/wisata/wisatapage.dart';
 
 class HttpServiceWisata {
   Future<void> updateWisata(id, nama_wisata, keterangan, description, tag, tag1,
-      gambar, wilayah, context) async {
+      gambar1, gambar2, gambar3, gambar4,  wilayah, context) async {
     // print(gambar);
     SharedPreferences preferences = await SharedPreferences.getInstance();
     var token = preferences.getString('token');
     var url = Uri.parse('${dotenv.env['url']}/update-wisata');
     var request = http.MultipartRequest("POST", url);
-    final imagepath = await http.MultipartFile.fromPath('image', gambar);
-    // print(imagepath);
+    final imagepath1 = await http.MultipartFile.fromPath('image1', gambar1);
+    final imagepath2 = await http.MultipartFile.fromPath('image2', gambar2);
+    final imagepath3 = await http.MultipartFile.fromPath('image3', gambar3);
+    final imagepath4 = await http.MultipartFile.fromPath('image4', gambar4);
+    // print(imagepath1);
     request.fields['id'] = id;
     request.fields['nama_wisata'] = nama_wisata;
     request.fields['keterangan'] = keterangan;
@@ -30,7 +33,10 @@ class HttpServiceWisata {
     request.fields['tag'] = tag;
     request.fields['tag1'] = tag1;
     request.fields['wilayah'] = wilayah;
-    request.files.add(imagepath);
+    request.files.add(imagepath1);
+    request.files.add(imagepath2);
+    request.files.add(imagepath3);
+    request.files.add(imagepath4);
 
     request.headers['Authorization'] = 'Bearer $token';
     request.headers['Accept'] = 'application/json';

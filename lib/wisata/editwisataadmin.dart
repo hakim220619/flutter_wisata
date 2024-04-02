@@ -21,7 +21,10 @@ class EditWisataAdminPage extends StatefulWidget {
       required this.description,
       required this.tag,
       required this.tag1,
-      required this.image,
+      required this.image1,
+      required this.image2,
+      required this.image3,
+      required this.image4,
       required this.wilayah})
       : super(key: key);
   final String id;
@@ -30,7 +33,10 @@ class EditWisataAdminPage extends StatefulWidget {
   final String description;
   final String tag;
   final String tag1;
-  final String image;
+  final String image1;
+  final String image2;
+  final String image3;
+  final String image4;
   final String wilayah;
 
   @override
@@ -48,7 +54,10 @@ class _EditWisataAdminPageState extends State<EditWisataAdminPage> {
   String _tag = '';
   String _tag1 = '';
   // ignore: override_on_non_overriding_member
-  String? imagePath;
+  String? imagePath1;
+  String? imagePath2;
+  String? imagePath3;
+  String? imagePath4;
   var _wilayahAll;
 
   @override
@@ -226,7 +235,10 @@ class _EditWisataAdminPageState extends State<EditWisataAdminPage> {
                         const SizedBox(
                           height: 20,
                         ),
-                        containerImageWidget(context),
+                        containerImageWidget1(context),
+                        containerImageWidget2(context),
+                        containerImageWidget3(context),
+                        containerImageWidget4(context),
                         const SizedBox(
                           height: 20,
                         ),
@@ -263,7 +275,7 @@ class _EditWisataAdminPageState extends State<EditWisataAdminPage> {
                         ),
                         InkWell(
                             onTap: () async {
-                              // print(imagePath);
+                              print(imagePath1);
                               if (_formKey.currentState!.validate()) {
                                 await HttpServiceWisata().updateWisata(
                                     widget.id,
@@ -278,7 +290,10 @@ class _EditWisataAdminPageState extends State<EditWisataAdminPage> {
                                         : _description,
                                     _tag == '' ? widget.tag : _tag,
                                     _tag1 == '' ? widget.tag1 : _tag1,
-                                    imagePath,
+                                    imagePath1,
+                                    imagePath2,
+                                    imagePath3,
+                                    imagePath4,
                                     _wilayahAll == null
                                         ? widget.wilayah
                                         : _wilayahAll,
@@ -334,12 +349,12 @@ class _EditWisataAdminPageState extends State<EditWisataAdminPage> {
             )));
   }
 
-  Widget containerImageWidget(BuildContext context) {
+  Widget containerImageWidget1(BuildContext context) {
     return GestureDetector(
         onTap: () async {
-          final path = await chooseImage();
+          final path = await chooseImage1();
           setState(() {
-            imagePath = path;
+            imagePath1 = path;
             // print(imagePath);
           });
         },
@@ -350,24 +365,129 @@ class _EditWisataAdminPageState extends State<EditWisataAdminPage> {
           decoration: BoxDecoration(
             border: Border.all(color: Colors.black.withOpacity(.40)),
             borderRadius: BorderRadius.circular(4),
-            image: imagePath != null
+            image: imagePath1 != null
                 ? DecorationImage(
-                    image: FileImage(File(imagePath!)), fit: BoxFit.cover)
+                    image: FileImage(File(imagePath1!)), fit: BoxFit.cover)
                 : DecorationImage(
                     image: NetworkImage(
-                        '${dotenv.env['url_image']}storage/images/wisata/${widget.image}'),
+                        '${dotenv.env['url_image']}storage/images/wisata/${widget.image1}'),
                     fit: BoxFit.fill,
                   ),
           ),
           child: Visibility(
-              visible: imagePath == null ? true : false,
+              visible: imagePath1 == null ? true : false,
+              child: const Text('Pilih gambar')),
+        ));
+  }
+  Widget containerImageWidget2(BuildContext context) {
+    return GestureDetector(
+        onTap: () async {
+          final path = await chooseImage2();
+          setState(() {
+            imagePath2 = path;
+            // print(imagePath);
+          });
+        },
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: 200,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.black.withOpacity(.40)),
+            borderRadius: BorderRadius.circular(4),
+            image: imagePath2 != null
+                ? DecorationImage(
+                    image: FileImage(File(imagePath2!)), fit: BoxFit.cover)
+                : DecorationImage(
+                    image: NetworkImage(
+                        '${dotenv.env['url_image']}storage/images/wisata/${widget.image2}'),
+                    fit: BoxFit.fill,
+                  ),
+          ),
+          child: Visibility(
+              visible: imagePath2 == null ? true : false,
+              child: const Text('Pilih gambar')),
+        ));
+  }
+  Widget containerImageWidget3(BuildContext context) {
+    return GestureDetector(
+        onTap: () async {
+          final path = await chooseImage3();
+          setState(() {
+            imagePath3 = path;
+            // print(imagePath3);
+          });
+        },
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: 200,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.black.withOpacity(.40)),
+            borderRadius: BorderRadius.circular(4),
+            image: imagePath3 != null
+                ? DecorationImage(
+                    image: FileImage(File(imagePath3!)), fit: BoxFit.cover)
+                : DecorationImage(
+                    image: NetworkImage(
+                        '${dotenv.env['url_image']}storage/images/wisata/${widget.image3}'),
+                    fit: BoxFit.fill,
+                  ),
+          ),
+          child: Visibility(
+              visible: imagePath3 == null ? true : false,
+              child: const Text('Pilih gambar')),
+        ));
+  }
+  Widget containerImageWidget4(BuildContext context) {
+    return GestureDetector(
+        onTap: () async {
+          final path = await chooseImage4();
+          setState(() {
+            imagePath4 = path;
+            // print(imagePath4);
+          });
+        },
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: 200,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.black.withOpacity(.40)),
+            borderRadius: BorderRadius.circular(4),
+            image: imagePath4 != null
+                ? DecorationImage(
+                    image: FileImage(File(imagePath4!)), fit: BoxFit.cover)
+                : DecorationImage(
+                    image: NetworkImage(
+                        '${dotenv.env['url_image']}storage/images/wisata/${widget.image4}'),
+                    fit: BoxFit.fill,
+                  ),
+          ),
+          child: Visibility(
+              visible: imagePath4 == null ? true : false,
               child: const Text('Pilih gambar')),
         ));
   }
 }
 
-Future<String?> chooseImage() async {
+Future<String?> chooseImage1() async {
   final ImagePicker picker = ImagePicker();
-  final image = await picker.pickImage(source: ImageSource.gallery);
-  return image!.path;
+  final image1 = await picker.pickImage(source: ImageSource.gallery);
+  return image1!.path;
+}
+Future<String?> chooseImage2() async {
+  final ImagePicker picker = ImagePicker();
+  final image2 = await picker.pickImage(source: ImageSource.gallery);
+  return image2!.path;
+}
+Future<String?> chooseImage3() async {
+  final ImagePicker picker = ImagePicker();
+  final image3 = await picker.pickImage(source: ImageSource.gallery);
+  return image3!.path;
+}
+Future<String?> chooseImage4() async {
+  final ImagePicker picker = ImagePicker();
+  final image4 = await picker.pickImage(source: ImageSource.gallery);
+  return image4!.path;
 }
