@@ -31,7 +31,10 @@ class _AddWisataAdminPageState extends State<AddWisataAdminPage> {
   String _tag1 = '';
   String? wilayah;
   // ignore: override_on_non_overriding_member
-  String? imagePath;
+  String? imagePath1;
+  String? imagePath2;
+  String? imagePath3;
+  String? imagePath4;
 
   @override
   void dispose() {
@@ -203,7 +206,10 @@ class _AddWisataAdminPageState extends State<AddWisataAdminPage> {
                         const SizedBox(
                           height: 20,
                         ),
-                        containerImageWidget(context),
+                        containerImageWidget1(context),
+                        containerImageWidget2(context),
+                        containerImageWidget3(context),
+                        containerImageWidget4(context),
                         const SizedBox(
                           height: 20,
                         ),
@@ -248,7 +254,10 @@ class _AddWisataAdminPageState extends State<AddWisataAdminPage> {
                                     _tag,
                                     _tag1,
                                     wilayah,
-                                    imagePath,
+                                    imagePath1,
+                                    imagePath2,
+                                    imagePath3,
+                                    imagePath4,
                                     context);
                               }
                             },
@@ -277,12 +286,12 @@ class _AddWisataAdminPageState extends State<AddWisataAdminPage> {
             )));
   }
 
-  Widget containerImageWidget(BuildContext context) {
+  Widget containerImageWidget1(BuildContext context) {
     return GestureDetector(
       onTap: () async {
         final path = await chooseImage();
         setState(() {
-          imagePath = path;
+          imagePath1 = path;
         });
       },
       child: Container(
@@ -292,17 +301,93 @@ class _AddWisataAdminPageState extends State<AddWisataAdminPage> {
         decoration: BoxDecoration(
             border: Border.all(color: Colors.black.withOpacity(.40)),
             borderRadius: BorderRadius.circular(4),
-            image: imagePath != null
+            image: imagePath1 != null
                 ? DecorationImage(
-                    image: FileImage(File(imagePath!)), fit: BoxFit.cover)
+                    image: FileImage(File(imagePath1!)), fit: BoxFit.cover)
                 : null),
         child: Visibility(
-            visible: imagePath == null ? true : false,
+            visible: imagePath1 == null ? true : false,
+            child: const Text('Pilih gambar')),
+      ),
+    );
+  }
+  Widget containerImageWidget2(BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        final path = await chooseImage();
+        setState(() {
+          imagePath2 = path;
+        });
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: 200,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+            border: Border.all(color: Colors.black.withOpacity(.40)),
+            borderRadius: BorderRadius.circular(4),
+            image: imagePath2 != null
+                ? DecorationImage(
+                    image: FileImage(File(imagePath2!)), fit: BoxFit.cover)
+                : null),
+        child: Visibility(
+            visible: imagePath2 == null ? true : false,
+            child: const Text('Pilih gambar')),
+      ),
+    );
+  }
+  Widget containerImageWidget3(BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        final path = await chooseImage();
+        setState(() {
+          imagePath3 = path;
+        });
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: 200,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+            border: Border.all(color: Colors.black.withOpacity(.40)),
+            borderRadius: BorderRadius.circular(4),
+            image: imagePath3 != null
+                ? DecorationImage(
+                    image: FileImage(File(imagePath3!)), fit: BoxFit.cover)
+                : null),
+        child: Visibility(
+            visible: imagePath3 == null ? true : false,
+            child: const Text('Pilih gambar')),
+      ),
+    );
+  }
+  Widget containerImageWidget4(BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        final path = await chooseImage();
+        setState(() {
+          imagePath4 = path;
+        });
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: 200,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+            border: Border.all(color: Colors.black.withOpacity(.40)),
+            borderRadius: BorderRadius.circular(4),
+            image: imagePath4 != null
+                ? DecorationImage(
+                    image: FileImage(File(imagePath4!)), fit: BoxFit.cover)
+                : null),
+        child: Visibility(
+            visible: imagePath4 == null ? true : false,
             child: const Text('Pilih gambar')),
       ),
     );
   }
 }
+ 
 
 Future<String?> chooseImage() async {
   final ImagePicker picker = ImagePicker();

@@ -231,14 +231,14 @@ class _PostWidgetAdminState extends State<PostWidgetAdmin> {
               ),
             Center(
               child: Container(
-                height: 55,
+                height: 58,
                 padding:
                     const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                 child: Row(
                   children: [
                     Icon(
                       Icons.message,
-                      size: 14,
+                      size: 17,
                       color: Colors.grey[400],
                     ),
                     const SizedBox(width: 5),
@@ -246,7 +246,7 @@ class _PostWidgetAdminState extends State<PostWidgetAdmin> {
                       child: Text(
                         'Comment',
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 20,
                           color: Colors.grey[600],
                           fontWeight: FontWeight.w600,
                         ),
