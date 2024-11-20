@@ -168,7 +168,6 @@ class _PostWidgetState extends State<PostWidget> {
   @override
   Widget build(BuildContext context) {
     int _current = 0;
-    final CarouselController _controller = CarouselController();
     final List<String> imgList = [
       widget.imgPath1,
       widget.imgPath2,

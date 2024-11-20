@@ -185,6 +185,46 @@ class SearchWisataRiverpod extends ConsumerWidget {
                               .onTap('Siak Sri Indrapura', data['data']);
                         },
                       ),
+                      
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      InkWell(
+                        child: const Text('Alam'),
+                        onTap: () {
+                           ref
+                            .watch(searchUserProvider.notifier)
+                            .update((state) => state = 'Alam');
+                          ref
+                              .watch(searchControllerProvider.notifier)
+                              .onTapTag1('Alam', data['data']);
+                        },
+                      ),
+                      InkWell(
+                        child: const Text('Buatan'),
+                        onTap: () {
+                           ref
+                            .watch(searchUserProvider.notifier)
+                            .update((state) => state = 'buatan');
+                          ref
+                              .watch(searchControllerProvider.notifier)
+                              .onTapTag1('buatan', data['data']);
+                        },
+                      ),
+                      InkWell(
+                        child: const Text('Sejarah'),
+                        onTap: () {
+                           ref
+                            .watch(searchUserProvider.notifier)
+                            .update((state) => state = 'sejarah');
+                          ref
+                              .watch(searchControllerProvider.notifier)
+                              .onTapTag1('sejarah', data['data']);
+                        },
+                      ),
+                      
                     ],
                   ),
                   const SizedBox(
