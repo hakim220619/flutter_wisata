@@ -19,6 +19,7 @@ class HttpService {
   static final _loginUrl = Uri.parse('${dotenv.env['url']}/login');
 
   static login(email, password, context) async {
+    print(_loginUrl);
     EasyLoading.show(status: 'loading...');
     http.Response response = await _client
         .post(_loginUrl, body: {"email": email, "password": password});

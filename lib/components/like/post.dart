@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_reaction_button/flutter_reaction_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wisata/components/like/data.dart' as data;
@@ -13,6 +15,7 @@ import 'package:wisata/wisata/detailWisata.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:wisata/wisata/editwisataadmin.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:image_picker/image_picker.dart'; // Image picker import
 
 class PostWidget extends StatefulWidget {
   const PostWidget({
@@ -46,7 +49,67 @@ class PostWidget extends StatefulWidget {
 List _listsData = [];
 
 class _PostWidgetState extends State<PostWidget> {
-  Future<dynamic> lisComment() async {
+  final ImagePicker _picker = ImagePicker();
+  File? _image; // This will store the picked image
+    // Create a TextEditingController to handle text input
+    TextEditingController _commentController = TextEditingController();
+  // Comment and image upload
+  Future<void> _pickImage() async {
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery, // Use ImageSource.camera for camera
+    );
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path); // Store the picked image
+      });
+    }
+  }
+  Future<void> _uploadComment() async {
+    try {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      var token = preferences.getString('token');
+      var userId = preferences.getString('id');
+      var url = Uri.parse('${dotenv.env['url']}/addCommentById');
+
+      var request = http.MultipartRequest('POST', url);
+      request.headers.addAll({
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      });
+
+      // Add the text comment
+      request.fields['comment'] = _commentController.text;
+      request.fields['id_wisata'] = widget.id.toString();
+      request.fields['id_user'] = userId.toString();
+
+      // If an image is selected, add it to the request
+      if (_image != null) {
+        var imageFile = await http.MultipartFile.fromPath(
+          'image', // The name of the file field in the backend
+          _image!.path, // Ensure _image is the correct variable holding the picked image
+        );
+        request.files.add(imageFile);
+      }
+
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        // Successfully uploaded the comment
+        lisComment(); // Refresh the list of comments
+        _commentController.clear(); // Clear the input field
+        setState(() {
+          _image = null; // Clear the selected image after upload
+        });
+        FocusScope.of(context).unfocus(); // Hide the keyboard
+      } else {
+        print('Failed to upload comment');
+      }
+    } catch (e) {
+      print('Error uploading comment: $e');
+    }
+  }
+
+  Future<dynamic> DatalisComment() async {
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();
       var token = preferences.getString('token');
@@ -57,103 +120,20 @@ class _PostWidgetState extends State<PostWidget> {
       }, body: {
         'id_wisata': widget.id.toString()
       });
-      // print(response.body);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        // print(data);
         setState(() {
           _listsData = data['data'];
-          showModalBottomSheet<void>(
-            context: context,
-            isScrollControlled: true,
-            useSafeArea: true,
-            builder: (BuildContext context) {
-              return SizedBox(
-                height: 600,
-                child: Container(
-                  child: CommentBox(
-                    userImage: CommentBox.commentImageParser(
-                        imageURLorPath: "assets/images/users.png"),
-                    child: commentChild(_listsData),
-                    labelText: 'Write a comment...',
-                    errorText: 'Comment cannot be blank',
-                    withBorder: false,
-                    sendButtonMethod: () async {
-                      if (formKey.currentState!.validate()) {
-                        // print(commentController.text);
-                        SharedPreferences preferences =
-                            await SharedPreferences.getInstance();
-                        var token = preferences.getString('token');
-                        var id = preferences.getString('id');
-                        var url =
-                            Uri.parse('${dotenv.env['url']}/addCommentById');
-                        final response = await http.post(url, headers: {
-                          "Accept": "application/json",
-                          "Authorization": "Bearer $token",
-                        }, body: {
-                          'id_wisata': widget.id.toString(),
-                          'comment': commentController.text,
-                          'id_user': id,
-                        });
-                        print(response.body);
-
-                        if (response.statusCode == 200) {
-                          lisComment();
-                          Navigator.pop(context);
-                          commentController.clear();
-                          FocusScope.of(context).unfocus();
-                        }
-                      } else {
-                        print("Not validated");
-                      }
-                    },
-                    formKey: formKey,
-                    commentController: commentController,
-                    backgroundColor: Colors.blue,
-                    textColor: Colors.white,
-                    sendWidget:
-                        Icon(Icons.send_sharp, size: 30, color: Colors.white),
-                  ),
-                ),
-              );
-            },
-          );
         });
       }
     } catch (e) {
-      // print(e);
+      print(e);
     }
   }
 
-  // Future<Widget> reaction({id}) async {
-  //   SharedPreferences preferences = await SharedPreferences.getInstance();
-  //     var token = preferences.getString('token');
-  //     var url = Uri.parse('${dotenv.env['url']}/listCommentById');
-  //     final response = await http.post(url, headers: {
-  //       "Accept": "application/json",
-  //       "Authorization": "Bearer $token",
-  //     }, body: {
-  //       'id_wisata': widget.id.toString()
-  //     });
-  //     // print(response.body);
-  //     if (response.statusCode == 200) {
-  //       final data = jsonDecode(response.body);
-  //   return ReactionButton<String>(
-  //     itemSize: const Size.square(40),
-  //     onReactionChanged: (Reaction<String>? reaction) {
-  //       debugPrint('Selected value: ${reaction?.value}');
-  //     },
-  //     reactions: widget.reactions,
-  //     placeholder: widget.reactions.first,
-  //     selectedReaction: widget.reactions.first,
-  //   );
-  // }
-
-  // Sample data for three lists
   @override
   void initState() {
     super.initState();
-    // print(widget.id);
   }
 
   late SharedPreferences profileData;
@@ -163,6 +143,193 @@ class _PostWidgetState extends State<PostWidget> {
     setState(() {
       role = profileData.getString('role');
     });
+  }
+
+  Future<void> lisComment() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    var token = preferences.getString('token');
+    var url = Uri.parse('${dotenv.env['url']}/listCommentById');
+    final response = await http.post(url, headers: {
+      "Accept": "application/json",
+      "Authorization": "Bearer $token",
+    }, body: {
+      'id_wisata': widget.id.toString()
+    });
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      setState(() {
+        _listsData = data['data'];
+      });
+    }
+
+
+    final ImagePicker _picker = ImagePicker(); // Initialize image picker
+    String? _imagePath; // Store the path of the selected image
+
+    // Show the bottom sheet
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 900, // Adjusted height to fit new content
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Text(
+                'Comment Section',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _listsData.length,
+                  itemBuilder: (context, index) {
+                    var comment = _listsData[index];
+                    return Padding(
+                      padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
+                      child: ListTile(
+                        leading: GestureDetector(
+                          onTap: () async {
+                            print("Comment Clicked");
+                          },
+                          child: Container(
+                            height: 50.0,
+                            width: 50.0,
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50)),
+                            ),
+                            child: CircleAvatar(
+                              radius: 50,
+                              backgroundImage: CommentBox.commentImageParser(
+                                imageURLorPath: 'assets/images/users.png',
+                              ),
+                            ),
+                          ),
+                        ),
+                        title: Text(
+                          comment['name'] ?? 'Unknown User',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${comment['comment'] ?? 'No comment'}',
+                              style: TextStyle(fontWeight: FontWeight.normal),
+                            ),
+                            // Display the image if available
+                            if (comment['image_path'] != null)
+                              Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Image.network(
+                                      '${dotenv.env['url_image']}storage/${comment['image_path']}',
+                                      fit: BoxFit.cover,
+                                      width: 80)),
+
+                            Text(
+                              '${comment['created_at'] ?? 'No date'}',
+                              style: TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              // Text input field for new comment
+              Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: TextField(
+                controller: _commentController,
+                decoration: InputDecoration(
+                  hintText: 'Enter your comment...',
+                  border: OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.send),
+                    onPressed: () async {
+                      String newComment = _commentController.text.trim();
+                      if (newComment.isNotEmpty || _image != null) {
+                        // Upload comment
+                        await _uploadComment();
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ),
+              RatingBar.builder(
+                itemSize: 20,
+                initialRating: widget.rate.toDouble(),
+                minRating: 1,
+                direction: Axis.horizontal,
+                allowHalfRating: true,
+                itemCount: 5,
+                itemPadding: EdgeInsets.all(10),
+                itemBuilder: (context, _) => Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                ),
+                onRatingUpdate: (rating) async {
+                  final _client = http.Client();
+                  final _urlRate = Uri.parse('${dotenv.env['url']}/rate');
+                  SharedPreferences preferences =
+                      await SharedPreferences.getInstance();
+                  var token = preferences.getString('token');
+                  var id_user = preferences.getString('id');
+                  EasyLoading.show(status: 'loading...');
+                  http.Response response = await _client.post(
+                    _urlRate,
+                    headers: {
+                      "Accept": "application/json",
+                      "Authorization": "Bearer $token",
+                    },
+                    body: {
+                      "id_user": id_user.toString(),
+                      "id_wisata": widget.id.toString(),
+                      "rate": rating.toString(),
+                    },
+                  );
+                  print(rating);
+                  print(response.body);
+                  if (response.statusCode == 200) {
+                    EasyLoading.dismiss();
+                  } else {
+                    await EasyLoading.showError(
+                        "Error Code : ${response.statusCode.toString()}");
+                  }
+                },
+              ),
+              // Button to upload image
+              ElevatedButton(
+                onPressed: () async {
+                  // Let the user pick an image from the gallery or take a photo
+                  final XFile? image = await _picker.pickImage(
+                    source: ImageSource
+                        .gallery, // Or use ImageSource.camera for camera input
+                  );
+
+                  if (image != null) {
+                    print('Image selected: ${image.path}');
+                    setState(() {
+                      _imagePath = image.path; // Store the image path
+                    });
+                  } else {
+                    print('No image selected');
+                  }
+                },
+                child: Text('Upload Image'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -218,8 +385,33 @@ class _PostWidgetState extends State<PostWidget> {
                         Icons.star,
                         color: Colors.amber,
                       ),
-                      onRatingUpdate: (rating) {
-                        print(rating);
+                      onRatingUpdate: (rating) async {
+                        final _client = http.Client();
+                        final _urlRate = Uri.parse('${dotenv.env['url']}/rate');
+                        SharedPreferences preferences =
+                            await SharedPreferences.getInstance();
+                        var token = preferences.getString('token');
+                        var id_user = preferences.getString('id');
+                        EasyLoading.show(status: 'loading...');
+                        http.Response response = await _client.post(
+                          _urlRate,
+                          headers: {
+                            "Accept": "application/json",
+                            "Authorization": "Bearer $token",
+                          },
+                          body: {
+                            "id_user": id_user.toString(),
+                            "id_wisata": widget.id.toString(),
+                            "rate": rating.toString(),
+                          },
+                        );
+                        print(response.body);
+                        if (response.statusCode == 200) {
+                          EasyLoading.dismiss();
+                        } else {
+                          await EasyLoading.showError(
+                              "Error Code : ${response.statusCode.toString()}");
+                        }
                       },
                     ),
                     if (widget.title != null && widget.description != null)
@@ -255,7 +447,7 @@ class _PostWidgetState extends State<PostWidget> {
                       onTap: () {
                         lisComment();
                       },
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -276,15 +468,14 @@ Widget commentChild(data) {
           child: ListTile(
             leading: GestureDetector(
               onTap: () async {
-                // Display the image in large form.
                 print("Comment Clicked");
               },
               child: Container(
                 height: 50.0,
                 width: 50.0,
-                decoration: new BoxDecoration(
+                decoration: BoxDecoration(
                     color: Colors.blue,
-                    borderRadius: new BorderRadius.all(Radius.circular(50))),
+                    borderRadius: BorderRadius.all(Radius.circular(50))),
                 child: CircleAvatar(
                     radius: 50,
                     backgroundImage: CommentBox.commentImageParser(
@@ -298,7 +489,7 @@ Widget commentChild(data) {
             subtitle: Text(
                 '${_listsData[i]['comment']} \n${_listsData[i]['created_at']}'),
           ),
-        )
+        ),
     ],
   );
 }

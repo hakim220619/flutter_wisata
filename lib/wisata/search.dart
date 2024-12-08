@@ -24,23 +24,37 @@ class SearchWisataRiverpod extends ConsumerWidget {
       try {
         EasyLoading.show(status: 'loading...');
         SharedPreferences preferences = await SharedPreferences.getInstance();
+
+        // Mengambil token dari SharedPreferences
         var token = preferences.getString('token');
+
+        // Melakukan request logout
         http.Response response = await _client.get(_logoutUrl, headers: {
           "Accept": "application/json",
           "Authorization": "Bearer $token",
         });
-        // print(response.body);
-        if (response.statusCode == 200) {
-          EasyLoading.dismiss();
-          // ignore: use_build_context_synchronously
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (BuildContext context) => const LoginPage(),
-            ),
-            (route) => false,
-          );
-        }
+
+        print(response.body);
+
+        // Menghapus data di SharedPreferences setelah logout
+        await preferences.remove('email');
+        await preferences.remove('id');
+        await preferences.remove('name');
+        await preferences.remove('role');
+        await preferences.remove('token');
+        await preferences.remove('is_login');
+
+        EasyLoading.dismiss();
+
+        // Mengarahkan pengguna ke halaman login
+        // ignore: use_build_context_synchronously
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => const LoginPage(),
+          ),
+          (route) => false,
+        );
       } catch (e) {
         print(e);
       }
@@ -155,9 +169,9 @@ class SearchWisataRiverpod extends ConsumerWidget {
                       InkWell(
                         child: const Text('Bengkalis'),
                         onTap: () {
-                           ref
-                            .watch(searchUserProvider.notifier)
-                            .update((state) => state = 'Bengkalis');
+                          ref
+                              .watch(searchUserProvider.notifier)
+                              .update((state) => state = 'Bengkalis');
                           ref
                               .watch(searchControllerProvider.notifier)
                               .onTap('Bengkalis', data['data']);
@@ -166,9 +180,9 @@ class SearchWisataRiverpod extends ConsumerWidget {
                       InkWell(
                         child: const Text('Dumai'),
                         onTap: () {
-                           ref
-                            .watch(searchUserProvider.notifier)
-                            .update((state) => state = 'Dumai');
+                          ref
+                              .watch(searchUserProvider.notifier)
+                              .update((state) => state = 'Dumai');
                           ref
                               .watch(searchControllerProvider.notifier)
                               .onTap('Dumai', data['data']);
@@ -177,15 +191,14 @@ class SearchWisataRiverpod extends ConsumerWidget {
                       InkWell(
                         child: const Text('Siak Sri Indrapura'),
                         onTap: () {
-                           ref
-                            .watch(searchUserProvider.notifier)
-                            .update((state) => state = 'Siak Sri Indrapura');
+                          ref
+                              .watch(searchUserProvider.notifier)
+                              .update((state) => state = 'Siak Sri Indrapura');
                           ref
                               .watch(searchControllerProvider.notifier)
                               .onTap('Siak Sri Indrapura', data['data']);
                         },
                       ),
-                      
                     ],
                   ),
                   Row(
@@ -194,9 +207,9 @@ class SearchWisataRiverpod extends ConsumerWidget {
                       InkWell(
                         child: const Text('Alam'),
                         onTap: () {
-                           ref
-                            .watch(searchUserProvider.notifier)
-                            .update((state) => state = 'Alam');
+                          ref
+                              .watch(searchUserProvider.notifier)
+                              .update((state) => state = 'Alam');
                           ref
                               .watch(searchControllerProvider.notifier)
                               .onTapTag1('Alam', data['data']);
@@ -205,9 +218,9 @@ class SearchWisataRiverpod extends ConsumerWidget {
                       InkWell(
                         child: const Text('Buatan'),
                         onTap: () {
-                           ref
-                            .watch(searchUserProvider.notifier)
-                            .update((state) => state = 'buatan');
+                          ref
+                              .watch(searchUserProvider.notifier)
+                              .update((state) => state = 'buatan');
                           ref
                               .watch(searchControllerProvider.notifier)
                               .onTapTag1('buatan', data['data']);
@@ -216,15 +229,14 @@ class SearchWisataRiverpod extends ConsumerWidget {
                       InkWell(
                         child: const Text('Sejarah'),
                         onTap: () {
-                           ref
-                            .watch(searchUserProvider.notifier)
-                            .update((state) => state = 'sejarah');
+                          ref
+                              .watch(searchUserProvider.notifier)
+                              .update((state) => state = 'sejarah');
                           ref
                               .watch(searchControllerProvider.notifier)
                               .onTapTag1('sejarah', data['data']);
                         },
                       ),
-                      
                     ],
                   ),
                   const SizedBox(
@@ -257,10 +269,12 @@ class SearchWisataRiverpod extends ConsumerWidget {
                           id: user['id'].toString(),
                           rate: user['rate'] == null
                               ? 0.0
-                              // ignore: unrelated_type_equality_checks
-                              : dotenv.env['production'] == 'false'
-                                  ? user['rate'].toDouble()
-                                  : double.parse(user['rate']),
+                              : dotenv.env['production'] == 'true'
+                                  ? double.tryParse(user['rate'].toString()) ??
+                                      0.0
+                                  : double.tryParse(user['rate'].toString()) ??
+                                      0.0,
+
                           title: _title(title: user['nama_wisata']),
                           description: _content(desc: user['keterangan']),
                           imgPath1:

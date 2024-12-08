@@ -42,7 +42,7 @@ class _DetailWisataPageState extends State<DetailWisataPage> {
       }, body: {
         'id_wisata': widget.id.toString()
       });
-      // print(response.body);
+      print(response.body);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         // print(data);
@@ -63,8 +63,7 @@ class _DetailWisataPageState extends State<DetailWisataPage> {
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();
       var token = preferences.getString('token');
-      var url =
-          Uri.parse('${dotenv.env['url']}/getWisata');
+      var url = Uri.parse('${dotenv.env['url']}/getWisata');
       final response = await http.get(url, headers: {
         "Accept": "application/json",
         "Authorization": "Bearer $token",
@@ -118,7 +117,7 @@ class _DetailWisataPageState extends State<DetailWisataPage> {
               MaterialPageRoute(
                 builder: (BuildContext context) => const SearchWisataRiverpod(),
               ),
-             (route) => false,
+              (route) => false,
             ),
           ),
         ),
@@ -154,7 +153,7 @@ class _DetailWisataPageState extends State<DetailWisataPage> {
                                           child: AspectRatio(
                                             aspectRatio: 2,
                                             child: Image.network(
-                                              '${dotenv.env['url_image']}storage/images/wisata/${_listsData[index]['image']}',
+                                              '${dotenv.env['url_image']}storage/images/wisata/${_listsData[index]['image1']}',
                                               width: double.infinity,
                                               fit: BoxFit.cover,
                                             ),
@@ -175,78 +174,73 @@ class _DetailWisataPageState extends State<DetailWisataPage> {
                                                 ),
                                               ),
                                               Center(
-                                                child: RatingBar.builder(
-                                                  itemSize: 40.0,
-                                                  initialRating: dotenv.env[
-                                                              'production'] ==
-                                                          'false'
-                                                      ? _listsData[index]
-                                                              ['rate']
-                                                          .toDouble()
-                                                      : _listsData[index]
-                                                                  ['rate'] ==
-                                                              null
-                                                          ? 0.0
-                                                          : double.parse(
-                                                              _listsData[index]
-                                                                  ['rate']),
-                                                  minRating: 1,
-                                                  direction: Axis.horizontal,
-                                                  allowHalfRating: true,
-                                                  itemCount: 5,
-                                                  itemPadding:
-                                                      EdgeInsets.all(10),
-                                                  itemBuilder: (context, _) =>
-                                                      Icon(
-                                                    Icons.star,
-                                                    color: Colors.amber,
-                                                  ),
-                                                  onRatingUpdate:
-                                                      (rating) async {
-                                                    final _client =
-                                                        http.Client();
-                                                    final _urlRate = Uri.parse(
-                                                        '${dotenv.env['url']}/rate');
-                                                    // print(rating.toString());
-                                                    SharedPreferences
-                                                        preferences =
-                                                        await SharedPreferences
-                                                            .getInstance();
-                                                    var token = preferences
-                                                        .getString('token');
-                                                    var id_user = preferences
-                                                        .getString('id');
-                                                    EasyLoading.show(
-                                                        status: 'loading...');
-                                                    http.Response response =
-                                                        await _client.post(
-                                                            _urlRate,
-                                                            headers: {
-                                                          "Accept":
-                                                              "application/json",
-                                                          "Authorization":
-                                                              "Bearer $token",
-                                                        },
-                                                            body: {
-                                                          "id_user": id_user
-                                                              .toString(),
-                                                          "id_wisata": widget.id
-                                                              .toString(),
-                                                          "rate":
-                                                              rating.toString(),
-                                                        });
-                                                    // print(response.body);
-                                                    // print(response.statusCode);
-                                                    if (response.statusCode ==
-                                                        200) {
-                                                      EasyLoading.dismiss();
-                                                    } else {
-                                                      await EasyLoading.showError(
-                                                          "Error Code : ${response.statusCode.toString()}");
-                                                    }
-                                                  },
+                                                  child: RatingBar.builder(
+                                                itemSize: 40.0,
+                                                initialRating: dotenv.env[
+                                                            'production'] ==
+                                                        'true'
+                                                    ? double.parse(
+                                                        _listsData[index]
+                                                                ['rate']
+                                                            .toString())
+                                                    : (_listsData[index]
+                                                                ['rate'] ==
+                                                            null
+                                                        ? 0.0
+                                                        : double.parse(
+                                                            _listsData[index]
+                                                                    ['rate']
+                                                                .toString())),
+                                                minRating: 1,
+                                                direction: Axis.horizontal,
+                                                allowHalfRating: true,
+                                                itemCount: 5,
+                                                itemPadding: EdgeInsets.all(10),
+                                                itemBuilder: (context, _) =>
+                                                    Icon(
+                                                  Icons.star,
+                                                  color: Colors.amber,
                                                 ),
-                                              ),
+                                                onRatingUpdate: (rating) async {
+                                                  final _client = http.Client();
+                                                  final _urlRate = Uri.parse(
+                                                      '${dotenv.env['url']}/rate');
+                                                  SharedPreferences
+                                                      preferences =
+                                                      await SharedPreferences
+                                                          .getInstance();
+                                                  var token = preferences
+                                                      .getString('token');
+                                                  var id_user = preferences
+                                                      .getString('id');
+                                                  EasyLoading.show(
+                                                      status: 'loading...');
+                                                  http.Response response =
+                                                      await _client.post(
+                                                    _urlRate,
+                                                    headers: {
+                                                      "Accept":
+                                                          "application/json",
+                                                      "Authorization":
+                                                          "Bearer $token",
+                                                    },
+                                                    body: {
+                                                      "id_user":
+                                                          id_user.toString(),
+                                                      "id_wisata":
+                                                          widget.id.toString(),
+                                                      "rate": rating.toString(),
+                                                    },
+                                                  );
+                                                  if (response.statusCode ==
+                                                      200) {
+                                                    EasyLoading.dismiss();
+                                                  } else {
+                                                    await EasyLoading.showError(
+                                                        "Error Code : ${response.statusCode.toString()}");
+                                                  }
+                                                },
+                                              )),
                                               const SizedBox(
                                                 height: 2,
                                               ),
@@ -283,9 +277,10 @@ class _DetailWisataPageState extends State<DetailWisataPage> {
                       itemCount: locations.length,
                       itemBuilder: (context, index) {
                         return ListTile(
-                          
                           leading: Image.network(
-                            '${dotenv.env['url_image']}/storage/images/wisata/${locations[index]['image1']}', height: 50, width: 50,
+                            '${dotenv.env['url_image']}/storage/images/wisata/${locations[index]['image1']}',
+                            height: 50,
+                            width: 50,
                             fit: BoxFit.fill,
                           ),
                           title: Text('${locations[index]['nama_wisata']}'),
@@ -293,12 +288,13 @@ class _DetailWisataPageState extends State<DetailWisataPage> {
                           trailing: Icon(Icons.more_rounded),
                           onTap: () {
                             Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  DetailWisataPage(id: locations[index]['id']),
-                            ),
-                          );
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    DetailWisataPage(
+                                        id: locations[index]['id']),
+                              ),
+                            );
                           },
                         );
                       },

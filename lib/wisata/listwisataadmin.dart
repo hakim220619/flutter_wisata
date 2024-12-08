@@ -253,7 +253,7 @@ class ListWisataAdminPage extends ConsumerWidget {
                           rate: user['rate'] == null
                               ? 0.0
                               // ignore: unrelated_type_equality_checks
-                              : dotenv.env['production'] == 'false'
+                              : dotenv.env['production'] == 'true'
                                   ? user['rate'].toDouble()
                                   : double.parse(user['rate']),
                           title: _title(title: user['nama_wisata']),
