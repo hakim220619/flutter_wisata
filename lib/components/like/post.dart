@@ -309,19 +309,7 @@ class _PostWidgetState extends State<PostWidget> {
               ElevatedButton(
                 onPressed: () async {
                   // Let the user pick an image from the gallery or take a photo
-                  final XFile? image = await _picker.pickImage(
-                    source: ImageSource
-                        .gallery, // Or use ImageSource.camera for camera input
-                  );
-
-                  if (image != null) {
-                    print('Image selected: ${image.path}');
-                    setState(() {
-                      _imagePath = image.path; // Store the image path
-                    });
-                  } else {
-                    print('No image selected');
-                  }
+                  _pickImage();
                 },
                 child: Text('Upload Image'),
               ),

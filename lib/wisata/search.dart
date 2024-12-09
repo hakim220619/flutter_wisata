@@ -243,56 +243,56 @@ class SearchWisataRiverpod extends ConsumerWidget {
                     height: 10,
                   ),
                   Expanded(
-                      child: ListView.builder(
-                    padding: EdgeInsets.zero,
-                    itemCount: searchController.isNotEmpty
-                        ? searchController.length
-                        : data['data'].length,
-                    itemBuilder: (context, index) {
-                      // print(data['data']);
-                      final user = searchController.isNotEmpty
-                          ? searchController[index]
-                          : data['data'][index];
-                      // print(user['rate']);
-                      return InkWell(
-                        onTap: () async {
-                          // ignore: use_build_context_synchronously
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  DetailWisataPage(id: user['id'].toString()),
-                            ),
-                          );
-                        },
-                        child: PostWidget(
-                          id: user['id'].toString(),
-                          rate: user['rate'] == null
-                              ? 0.0
-                              : dotenv.env['production'] == 'true'
-                                  ? double.tryParse(user['rate'].toString()) ??
-                                      0.0
-                                  : double.tryParse(user['rate'].toString()) ??
-                                      0.0,
+                    child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: (searchController != null &&
+                              searchController.isNotEmpty)
+                          ? searchController.length
+                          : data['data'].length,
+                      itemBuilder: (context, index) {
+                        final user = (searchController != null &&
+                                searchController.isNotEmpty)
+                            ? searchController[index]
+                            : data['data'][index];
 
-                          title: _title(title: user['nama_wisata']),
-                          description: _content(desc: user['keterangan']),
-                          imgPath1:
-                              '${dotenv.env['url_image']}/storage/images/wisata/${user['image1']}',
-                          imgPath2:
-                              '${dotenv.env['url_image']}/storage/images/wisata/${user['image2']}',
-                          imgPath3:
-                              '${dotenv.env['url_image']}/storage/images/wisata/${user['image3']}',
-                          imgPath4:
-                              '${dotenv.env['url_image']}/storage/images/wisata/${user['image4']}',
-                          // imgPath: 'assets/images/wisata/pantai1.jpg',
-                          reactions: react.reactions,
-                        ),
-                      );
-
-                      // ),
-                    },
-                  )),
+                        return InkWell(
+                          onTap: () async {
+                            // ignore: use_build_context_synchronously
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    DetailWisataPage(id: user['id'].toString()),
+                              ),
+                            );
+                          },
+                          child: PostWidget(
+                            id: user['id'].toString(),
+                            rate: user['rate'] == null
+                                ? 0.0
+                                : dotenv.env['production'] == 'true'
+                                    ? double.tryParse(
+                                            user['rate'].toString()) ??
+                                        0.0
+                                    : double.tryParse(
+                                            user['rate'].toString()) ??
+                                        0.0,
+                            title: _title(title: user['nama_wisata']),
+                            description: _content(desc: user['keterangan']),
+                            imgPath1:
+                                '${dotenv.env['url_image']}/storage/images/wisata/${user['image1']}',
+                            imgPath2:
+                                '${dotenv.env['url_image']}/storage/images/wisata/${user['image2']}',
+                            imgPath3:
+                                '${dotenv.env['url_image']}/storage/images/wisata/${user['image3']}',
+                            imgPath4:
+                                '${dotenv.env['url_image']}/storage/images/wisata/${user['image4']}',
+                            reactions: react.reactions,
+                          ),
+                        );
+                      },
+                    ),
+                  )
                 ],
               ),
             ),
